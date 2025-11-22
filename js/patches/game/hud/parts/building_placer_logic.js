@@ -24,7 +24,7 @@ export function classPatch({ $old }) {
                     this.root.app.settings.getAllSettings().pickMinerOnPatch &&
                     this.root.currentLayer === "regular" &&
                     this.root.gameMode.hasResources() &&
-                    (this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_extractor) ||
+                    (this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_miner) ||
                         this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_miner_chainable))
                 ) {
                     this.currentMetaBuilding.set(gMetaBuildingRegistry.findByClass(MetaMinerBuilding));

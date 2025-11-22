@@ -14,7 +14,7 @@ export function classPatch({ $old }) {
             }
 
             return (
-                root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_extractor) ||
+                root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_miner) ||
                 root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_miner_chainable)
             );
         },

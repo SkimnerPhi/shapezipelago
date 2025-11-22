@@ -82,7 +82,7 @@ export function patchVanillaClasses(modInterface) {
 export function patchEnums() {
     Object.assign(enumHubGoalRewards, {
         reward_belt: "reward_belt",
-        reward_extractor: "reward_extractor",
+        reward_miner: "reward_miner",
         reward_cutter: "reward_cutter",
         reward_wires: "reward_wires",
         reward_lever: "reward_lever",

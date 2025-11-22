@@ -67,7 +67,7 @@ export const enumTrapToHubGoalRewards = {
     [enumTraps.belt]: enumHubGoalRewards.reward_belt,
     [enumTraps.balancer]: enumHubGoalRewards.reward_balancer,
     [enumTraps.tunnel]: enumHubGoalRewards.reward_tunnel,
-    [enumTraps.extractor]: enumHubGoalRewards.reward_extractor,
+    [enumTraps.extractor]: enumHubGoalRewards.reward_miner,
     [enumTraps.cutter]: enumHubGoalRewards.reward_cutter,
     [enumTraps.cutter_quad]: enumHubGoalRewards.reward_cutter,
     [enumTraps.rotator]: enumHubGoalRewards.reward_rotater,
