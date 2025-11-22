@@ -59,6 +59,22 @@ mods:
       failed: Connection failed
     APBox:
       title: Archipelago
+    shapesanity:
+      title: Shapesanity
+      shapes:
+        rect: Square
+        circle: Circle
+        star: Star
+        windmill: Windmill
+      types:
+        piece: Piece
+        half: Half
+        cutOut: Cut Out
+        halfHalf: Half-Half
+        checkered: Checkered
+        adjacent: Adjacent
+        cornered: Cornered
+        singles: Singles
     shapesanityBox:
       title: Shapesanity
       1Color4Shapes:
