@@ -9,7 +9,9 @@ import {
     customRewards,
     getIsUnlockedForTrap,
     modImpl,
+    roman,
     subShapeNames,
+    upgradeIdNames,
 } from "./global_data";
 import { CLIENT_STATUS } from "archipelago.js";
 import { enumColorToShortcode } from "shapez/game/colors";
@@ -784,6 +786,54 @@ export function bulkCheckLocation(resyncMessage, goal, names) {
         }
         connection.sendLocationChecks(locids);
     });
+}
+
+// This isn't an ideal location for this function, but it's the best option for now
+export function resyncLocationChecks() {
+    apDebugLog("Resyncing already reached locations");
+    const toResync = [];
+    // resync levels
+    for (let i = 1; i < currentIngame.root.hubGoals.level; ++i) {
+        // current level is what is to be completed
+        toResync.push(`Level ${i}`);
+    }
+    if (currentIngame.root.hubGoals.level > 20) {
+        toResync.push("Level 20 Additional", "Level 20 Additional 2");
+    }
+    if (currentIngame.root.hubGoals.level > 1) {
+        toResync.push("Level 1 Additional");
+    }
+    // resync upgrades
+    for (const upgradeId of ["belt", "miner", "processors", "painting"]) {
+        const currentLevel = currentIngame.root.hubGoals.getUpgradeLevel(upgradeId);
+        for (let i = 1; i <= currentLevel; ++i) {
+            toResync.push(upgradeIdNames[upgradeId] + " Upgrade Tier " + roman(i + 1));
+        }
+    }
+    // Send resync packet
+    bulkCheckLocation("Resynced", false, toResync);
+    // resync shapesanity
+    for (const [hash, amount] of Object.entries(currentIngame.root.hubGoals.storedShapes)) {
+        if ((amount || 0) > 0) {
+            shapesanityAnalyzer(ShapeDefinition.fromShortKey(hash));
+        }
+    }
+    // resync goals
+    if (connection.goal === "vanilla" || connection.goal === "mam") {
+        if (connection.levelsToGenerate < currentIngame.root.hubGoals.level) {
+            checkLocation("Checked", true);
+        }
+    } else if (connection.goal === "even_fasterer") {
+        // upgrade levels start at 0, because it is used for index of upgrade definitions
+        if (
+            currentIngame.root.hubGoals.getUpgradeLevel("belt") + 1 >= connection.tiersToGenerate &&
+            currentIngame.root.hubGoals.getUpgradeLevel("miner") + 1 >= connection.tiersToGenerate &&
+            currentIngame.root.hubGoals.getUpgradeLevel("processors") + 1 >= connection.tiersToGenerate &&
+            currentIngame.root.hubGoals.getUpgradeLevel("painting") + 1 >= connection.tiersToGenerate
+        ) {
+            checkLocation("Checked", true);
+        }
+    }
 }
 
 /**
