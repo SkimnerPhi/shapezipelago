@@ -1,6 +1,30 @@
-import { apassert, apdebuglog, aptry, connection, currentIngame, customRewards, methodNames, modImpl, roman, upgradeIdNames } from "./global_data";
+import {
+    apAssert,
+    apDebugLog,
+    apTry,
+    connection,
+    currentIngame,
+    customRewards,
+    methodNames,
+    modImpl,
+    roman,
+    upgradeIdNames,
+} from "./global_data";
 import { RandomNumberGenerator } from "shapez/core/rng";
-import { categoryRandomUpgradeShapes, categoryUpgradeShapes, hardcoreUpgradeShapes, linearUpgradeShapes, randomizedHardcoreDopamineShapes, randomizedQuickShapes, randomizedRandomStepsShapes, randomizedStretchedShapes, randomizedVanillaStepsShapes, vanillaLikeUpgradeShapes, vanillaShapes, vanillaUpgradeShapes } from "./requirement_definitions";
+import {
+    categoryRandomUpgradeShapes,
+    categoryUpgradeShapes,
+    hardcoreUpgradeShapes,
+    linearUpgradeShapes,
+    randomizedHardcoreDopamineShapes,
+    randomizedQuickShapes,
+    randomizedRandomStepsShapes,
+    randomizedStretchedShapes,
+    randomizedVanillaStepsShapes,
+    vanillaLikeUpgradeShapes,
+    enumVanillaShapes,
+    vanillaUpgradeShapes,
+} from "./requirement_definitions";
 import { bulkCheckLocation, checkLocation, shapesanityAnalyzer } from "./server_communication";
 import { enumAnalyticsDataSource } from "shapez/game/production_analytics";
 import { defaultBuildingVariant, MetaBuilding } from "shapez/game/meta_building";
@@ -23,12 +47,12 @@ import { getBuildingDataFromCode } from "shapez/game/building_codes";
 import { enumMinerVariants, MetaMinerBuilding } from "shapez/game/buildings/miner";
 
 export function overrideGameMode() {
-    apdebuglog("Calling overrideGameMode");
-    modImpl.modInterface.replaceMethod(shapez.RegularGameMode, "getUpgrades", function ($original, []) {
+    apDebugLog("Calling overrideGameMode");
+    modImpl.modInterface.replaceMethod(shapez.RegularGameMode, "getUpgrades", function ($original) {
         if (connection) {
-            aptry("Upgrade definitions failed", () => {
+            apTry("Upgrade definitions failed", () => {
                 if (!currentIngame.upgradeDefs) {
-                    apdebuglog("Calculating upgrade definitions");
+                    apDebugLog("Calculating upgrade definitions");
                     currentIngame.upgradeDefs = calcUpgradeDefinitions();
                     // MOD_SIGNALS.modifyUpgrades.dispatch(currentIngame.upgradeDefs);
                 }
@@ -38,11 +62,11 @@ export function overrideGameMode() {
             return $original();
         }
     });
-    modImpl.modInterface.replaceMethod(shapez.RegularGameMode, "getLevelDefinitions", function ($original, []) {
+    modImpl.modInterface.replaceMethod(shapez.RegularGameMode, "getLevelDefinitions", function ($original) {
         if (connection) {
-            aptry("Level definitions failed", () => {
+            apTry("Level definitions failed", () => {
                 if (!currentIngame.levelDefs) {
-                    apdebuglog("Calculating level definitions");
+                    apDebugLog("Calculating level definitions");
                     currentIngame.levelDefs = calcLevelDefinitions();
                     // MOD_SIGNALS.modifyLevelDefinitions.dispatch(currentIngame.levelDefs);
                 }
@@ -55,15 +79,21 @@ export function overrideGameMode() {
 }
 
 export function overrideLocationsListenToItems() {
-    apdebuglog("Calling overrideLocationsListenToItems");
-    modImpl.modInterface.replaceMethod(shapez.HubGoals, "onGoalCompleted", function($original, []) {
+    apDebugLog("Calling overrideLocationsListenToItems");
+    modImpl.modInterface.replaceMethod(shapez.HubGoals, "onGoalCompleted", function ($original) {
         if (connection) {
-            aptry("Completing level failed", () => {
+            apTry("Completing level failed", () => {
                 this.root.app.gameAnalytics.handleLevelCompleted(this.level);
-                if (this.level == 1) {
+                if (this.level === 1) {
                     checkLocation("Checked", false, "Level 1", "Level 1 Additional");
-                } else if (this.level == 20) {
-                    checkLocation("Checked", false, "Level 20", "Level 20 Additional", "Level 20 Additional 2");
+                } else if (this.level === 20) {
+                    checkLocation(
+                        "Checked",
+                        false,
+                        "Level 20",
+                        "Level 20 Additional",
+                        "Level 20 Additional 2"
+                    );
                 } else {
                     checkLocation("Checked", false, "Level " + this.level);
                 }
@@ -80,36 +110,44 @@ export function overrideLocationsListenToItems() {
             $original();
         }
     });
-    modImpl.modInterface.replaceMethod(shapez.HubGoals, "tryUnlockUpgrade", function ($original, [upgradeId]) {
-        if (connection) {
-            return aptry("Unlocking upgrade failed", () => {
-                const upgradeIdFixed = upgradeId.toString();
-                if (!this.canUnlockUpgrade(upgradeId)) {
-                    return false;
-                }
-                const upgradeTiers = this.root.gameMode.getUpgrades()[upgradeIdFixed];
-                const currentLevel = this.getUpgradeLevel(upgradeId);
-                const tierData = upgradeTiers[currentLevel];
-                if (!tierData) {
-                    return false;
-                }
-                for (let i = 0; i < tierData.required.length; ++i) {
-                    const requirement = tierData.required[i];
-                    this.storedShapes[requirement.shape] -= requirement.amount;
-                }
-                this.upgradeLevels[upgradeIdFixed] = (this.upgradeLevels[upgradeIdFixed] || 0) + 1;
-                checkLocation("Checked", false, upgradeIdNames[upgradeId] + " Upgrade Tier " + roman(currentLevel+2));
-                this.root.signals.upgradePurchased.dispatch(upgradeId);
-                this.root.app.gameAnalytics.handleUpgradeUnlocked(upgradeId, currentLevel);
-                return true
-            });
-        } else {
-            return $original(upgradeId);
+    modImpl.modInterface.replaceMethod(
+        shapez.HubGoals,
+        "tryUnlockUpgrade",
+        function ($original, [upgradeId]) {
+            if (connection) {
+                return apTry("Unlocking upgrade failed", () => {
+                    const upgradeIdFixed = upgradeId.toString();
+                    if (!this.canUnlockUpgrade(upgradeId)) {
+                        return false;
+                    }
+                    const upgradeTiers = this.root.gameMode.getUpgrades()[upgradeIdFixed];
+                    const currentLevel = this.getUpgradeLevel(upgradeId);
+                    const tierData = upgradeTiers[currentLevel];
+                    if (!tierData) {
+                        return false;
+                    }
+                    for (let i = 0; i < tierData.required.length; ++i) {
+                        const requirement = tierData.required[i];
+                        this.storedShapes[requirement.shape] -= requirement.amount;
+                    }
+                    this.upgradeLevels[upgradeIdFixed] = (this.upgradeLevels[upgradeIdFixed] || 0) + 1;
+                    checkLocation(
+                        "Checked",
+                        false,
+                        upgradeIdNames[upgradeId] + " Upgrade Tier " + roman(currentLevel + 2)
+                    );
+                    this.root.signals.upgradePurchased.dispatch(upgradeId);
+                    this.root.app.gameAnalytics.handleUpgradeUnlocked(upgradeId, currentLevel);
+                    return true;
+                });
+            } else {
+                return $original(upgradeId);
+            }
         }
-    });
-    modImpl.modInterface.replaceMethod(shapez.GameCore, "initNewGame", function ($original, []) {
-        aptry("Game initialization failed", () => {
-            apdebuglog("Initializing new AP game");
+    );
+    modImpl.modInterface.replaceMethod(shapez.GameCore, "initNewGame", function ($original) {
+        apTry("Game initialization failed", () => {
+            apDebugLog("Initializing new AP game");
             this.root.gameIsFresh = true;
             if (connection) {
                 this.root.map.seed = connection.clientSeed;
@@ -133,42 +171,45 @@ export function overrideLocationsListenToItems() {
             this.root.camera.center = new Vector(-5, 2).multiplyScalar(globalConfig.tileSize);
         });
     });
-    modImpl.modInterface.replaceMethod(shapez.HUDShop, "initialize", function ($original, []) {
+    modImpl.modInterface.replaceMethod(shapez.HUDShop, "initialize", function ($original) {
         $original();
         // Register the rerendering of the shop to item receiving signal, so that it immediately updates upon receiving an upgrade item
         currentIngame.itemReceiveSignal.add(this.rerenderFull, this);
     });
     modImpl.signals.gameInitialized.add(function (/** @type {GameRoot} */ root) {
-        aptry("AchievementProxy contruction failed", () => {
+        apTry("AchievementProxy contruction failed", () => {
             root.achievementProxy = new AchievementLocationProxy(root);
         });
     });
     modImpl.signals.gameStarted.add(function (/** @type {GameRoot} */ root) {
         if (connection) {
-            apdebuglog("I need to restructure these signals.gameStarted things...");
+            apDebugLog("I need to restructure these signals.gameStarted things...");
             root.signals.shapeDelivered.add(shapesanityAnalyzer);
             root.signals.upgradePurchased.add(function (upgrade) {
-                aptry("Testing even_fasterer goal failed", () => {
+                apTry("Testing even_fasterer goal failed", () => {
                     if (connection.goal === "even_fasterer") {
                         // upgrade levels start at 0, because it is used for index of upgrade definitions
-                        if (root.hubGoals.getUpgradeLevel("belt") + 1 >= connection.tiersToGenerate 
-                            && root.hubGoals.getUpgradeLevel("miner") + 1 >= connection.tiersToGenerate 
-                            && root.hubGoals.getUpgradeLevel("processors") + 1 >= connection.tiersToGenerate 
-                            && root.hubGoals.getUpgradeLevel("painting") + 1 >= connection.tiersToGenerate
+                        if (
+                            root.hubGoals.getUpgradeLevel("belt") + 1 >= connection.tiersToGenerate &&
+                            root.hubGoals.getUpgradeLevel("miner") + 1 >= connection.tiersToGenerate &&
+                            root.hubGoals.getUpgradeLevel("processors") + 1 >= connection.tiersToGenerate &&
+                            root.hubGoals.getUpgradeLevel("painting") + 1 >= connection.tiersToGenerate
                         ) {
                             checkLocation("Checked", true);
                         }
                     }
                 });
             });
-            aptry("Requesting item package failed", () => connection.requestItemPackage());
-            aptry("Resyncing locations failed", resyncLocationChecks);
+            apTry("Requesting item package failed", () => connection.requestItemPackage());
+            apTry("Resyncing locations failed", resyncLocationChecks);
             if (connection.goal === "efficiency_iii") {
                 currentIngame.startEfficiency3Interval(() => {
-                    aptry("Efficiency III failed", () => {
+                    apTry("Efficiency III failed", () => {
                         const currentRateRaw = currentIngame.root.productionAnalytics.getCurrentShapeRateRaw(
-                            enumAnalyticsDataSource.delivered, 
-                            currentIngame.root.shapeDefinitionMgr.getShapeFromShortKey(connection.blueprintShape)
+                            enumAnalyticsDataSource.delivered,
+                            currentIngame.root.shapeDefinitionMgr.getShapeFromShortKey(
+                                connection.blueprintShape
+                            )
                         );
                         if (currentRateRaw / globalConfig["analyticsSliceDurationSeconds"] >= 256) {
                             checkLocation("Checked", true);
@@ -181,329 +222,495 @@ export function overrideLocationsListenToItems() {
 }
 
 export function overrideBuildings() {
-    apdebuglog("Calling overrideBuildings");
+    apDebugLog("Calling overrideBuildings");
     // getIsUnlocked
-    modImpl.modInterface.replaceMethod(shapez.MetaBeltBuilding, methodNames.metaBuildings.getIsUnlocked, function ($original, [root]) {
-        return (connection ? currentIngame.root.hubGoals.isRewardUnlocked(customRewards.belt) : $original(root)) && !currentIngame.trapLocked.belt;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaBalancerBuilding, methodNames.metaBuildings.getIsUnlocked, function ($original, [root]) {
-        return (connection ? $original(root) || currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_merger)
-            || currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_splitter) : $original(root)) && !currentIngame.trapLocked.balancer;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaUndergroundBeltBuilding, methodNames.metaBuildings.getIsUnlocked, function ($original, [root]) {
-        return (connection ? $original(root) || currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_underground_belt_tier_2)
-            : $original(root)) && !currentIngame.trapLocked.tunnel;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaMinerBuilding, methodNames.metaBuildings.getIsUnlocked, function ($original, [root]) {
-        return (connection ? currentIngame.root.hubGoals.isRewardUnlocked(customRewards.extractor)
-            || currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_miner_chainable) : $original(root)) && !currentIngame.trapLocked.extractor;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaCutterBuilding, methodNames.metaBuildings.getIsUnlocked, function ($original, [root]) {
-        return (connection ? currentIngame.root.hubGoals.isRewardUnlocked(customRewards.cutter) 
-            || currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_cutter_quad) : $original(root)) && !currentIngame.trapLocked.cutter;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaRotaterBuilding, methodNames.metaBuildings.getIsUnlocked, function ($original, [root]) {
-        return (connection ? $original(root) || currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater_ccw) 
-            || currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater_180) : $original(root)) && !currentIngame.trapLocked.rotator;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaStackerBuilding, methodNames.metaBuildings.getIsUnlocked, function ($original, [root]) {
-        return $original(root) && !currentIngame.trapLocked.stacker;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaPainterBuilding, methodNames.metaBuildings.getIsUnlocked, function ($original, [root]) {
-        return (connection ? $original(root) || currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_painter_double) 
-            || currentIngame.root.hubGoals.isRewardUnlocked(customRewards.painter_quad) : $original(root)) && !currentIngame.trapLocked.painter;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaMixerBuilding, methodNames.metaBuildings.getIsUnlocked, function ($original, [root]) {
-        return $original(root) && !currentIngame.trapLocked.mixer;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaTrashBuilding, methodNames.metaBuildings.getIsUnlocked, function ($original, [root]) {
-        return (connection ? currentIngame.root.hubGoals.isRewardUnlocked(customRewards.trash) : $original(root)) && !currentIngame.trapLocked.trash;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaWireBuilding, methodNames.metaBuildings.getIsUnlocked, function ($original, [root]) {
-        if (connection) return currentIngame.root.hubGoals.isRewardUnlocked(customRewards.wires);
-        else return $original(root);
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaWireTunnelBuilding, methodNames.metaBuildings.getIsUnlocked, function ($original, [root]) {
-        if (connection) return currentIngame.root.hubGoals.isRewardUnlocked(customRewards.wires);
-        else return $original(root);
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaLeverBuilding, methodNames.metaBuildings.getIsUnlocked, function ($original, [root]) {
-        if (connection) return currentIngame.root.hubGoals.isRewardUnlocked(customRewards.switch);
-        else return $original(root);
-    });
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaBeltBuilding,
+        methodNames.metaBuildings.getIsUnlocked,
+        function ($original, [root]) {
+            return (
+                (connection
+                    ? currentIngame.root.hubGoals.isRewardUnlocked(customRewards.belt)
+                    : $original(root)) && !currentIngame.trapLocked.belt
+            );
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaBalancerBuilding,
+        methodNames.metaBuildings.getIsUnlocked,
+        function ($original, [root]) {
+            return (
+                (connection
+                    ? $original(root) ||
+                      currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_merger) ||
+                      currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_splitter)
+                    : $original(root)) && !currentIngame.trapLocked.balancer
+            );
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaUndergroundBeltBuilding,
+        methodNames.metaBuildings.getIsUnlocked,
+        function ($original, [root]) {
+            return (
+                (connection
+                    ? $original(root) ||
+                      currentIngame.root.hubGoals.isRewardUnlocked(
+                          enumHubGoalRewards.reward_underground_belt_tier_2
+                      )
+                    : $original(root)) && !currentIngame.trapLocked.tunnel
+            );
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaMinerBuilding,
+        methodNames.metaBuildings.getIsUnlocked,
+        function ($original, [root]) {
+            return (
+                (connection
+                    ? currentIngame.root.hubGoals.isRewardUnlocked(customRewards.extractor) ||
+                      currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_miner_chainable)
+                    : $original(root)) && !currentIngame.trapLocked.extractor
+            );
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaCutterBuilding,
+        methodNames.metaBuildings.getIsUnlocked,
+        function ($original, [root]) {
+            return (
+                (connection
+                    ? currentIngame.root.hubGoals.isRewardUnlocked(customRewards.cutter) ||
+                      currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_cutter_quad)
+                    : $original(root)) && !currentIngame.trapLocked.cutter
+            );
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaRotaterBuilding,
+        methodNames.metaBuildings.getIsUnlocked,
+        function ($original, [root]) {
+            return (
+                (connection
+                    ? $original(root) ||
+                      currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater_ccw) ||
+                      currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater_180)
+                    : $original(root)) && !currentIngame.trapLocked.rotator
+            );
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaStackerBuilding,
+        methodNames.metaBuildings.getIsUnlocked,
+        function ($original, [root]) {
+            return $original(root) && !currentIngame.trapLocked.stacker;
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaPainterBuilding,
+        methodNames.metaBuildings.getIsUnlocked,
+        function ($original, [root]) {
+            return (
+                (connection
+                    ? $original(root) ||
+                      currentIngame.root.hubGoals.isRewardUnlocked(
+                          enumHubGoalRewards.reward_painter_double
+                      ) ||
+                      currentIngame.root.hubGoals.isRewardUnlocked(customRewards.painter_quad)
+                    : $original(root)) && !currentIngame.trapLocked.painter
+            );
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaMixerBuilding,
+        methodNames.metaBuildings.getIsUnlocked,
+        function ($original, [root]) {
+            return $original(root) && !currentIngame.trapLocked.mixer;
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaTrashBuilding,
+        methodNames.metaBuildings.getIsUnlocked,
+        function ($original, [root]) {
+            return (
+                (connection
+                    ? currentIngame.root.hubGoals.isRewardUnlocked(customRewards.trash)
+                    : $original(root)) && !currentIngame.trapLocked.trash
+            );
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaWireBuilding,
+        methodNames.metaBuildings.getIsUnlocked,
+        function ($original, [root]) {
+            if (connection) {
+                return currentIngame.root.hubGoals.isRewardUnlocked(customRewards.wires);
+            } else {
+                return $original(root);
+            }
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaWireTunnelBuilding,
+        methodNames.metaBuildings.getIsUnlocked,
+        function ($original, [root]) {
+            if (connection) {
+                return currentIngame.root.hubGoals.isRewardUnlocked(customRewards.wires);
+            } else {
+                return $original(root);
+            }
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaLeverBuilding,
+        methodNames.metaBuildings.getIsUnlocked,
+        function ($original, [root]) {
+            if (connection) {
+                return currentIngame.root.hubGoals.isRewardUnlocked(customRewards.switch);
+            } else {
+                return $original(root);
+            }
+        }
+    );
     // base speeds
-    modImpl.modInterface.replaceMethod(shapez.HubGoals, "getBeltBaseSpeed", function ($original, []) {
+    modImpl.modInterface.replaceMethod(shapez.HubGoals, "getBeltBaseSpeed", function ($original) {
         return $original() * (currentIngame.trapThrottled.belt ? 0.5 : 1);
     });
-    modImpl.modInterface.replaceMethod(shapez.HubGoals, "getUndergroundBeltBaseSpeed", function ($original, []) {
+    modImpl.modInterface.replaceMethod(shapez.HubGoals, "getUndergroundBeltBaseSpeed", function ($original) {
         return $original() * (currentIngame.trapThrottled.tunnel ? 0.5 : 1);
     });
-    modImpl.modInterface.replaceMethod(shapez.HubGoals, "getMinerBaseSpeed", function ($original, []) {
+    modImpl.modInterface.replaceMethod(shapez.HubGoals, "getMinerBaseSpeed", function ($original) {
         return $original() * (currentIngame.trapThrottled.extractor ? 0.5 : 1);
     });
-    modImpl.modInterface.replaceMethod(shapez.HubGoals, "getProcessorBaseSpeed", function ($original, [processorType]) {
-        const originalSpeed = $original(processorType);
-        switch (processorType) {
-            case enumItemProcessorTypes.balancer:
-                return originalSpeed * (currentIngame.trapThrottled.balancer ? 0.5 : 1);
-            case enumItemProcessorTypes.mixer:
-                return originalSpeed * (currentIngame.trapThrottled.mixer ? 0.5 : 1);
-            case enumItemProcessorTypes.painter:
-            case enumItemProcessorTypes.painterDouble:
-            case enumItemProcessorTypes.painterQuad:
-                return originalSpeed * (currentIngame.trapThrottled.painter ? 0.5 : 1);
-            case enumItemProcessorTypes.cutter:
-            case enumItemProcessorTypes.cutterQuad:
-                return originalSpeed * (currentIngame.trapThrottled.cutter ? 0.5 : 1);
-            case enumItemProcessorTypes.rotater:
-            case enumItemProcessorTypes.rotaterCCW:
-            case enumItemProcessorTypes.rotater180:
-                return originalSpeed * (currentIngame.trapThrottled.rotator ? 0.5 : 1);
-            case enumItemProcessorTypes.stacker:
-                return originalSpeed * (currentIngame.trapThrottled.stacker ? 0.5 : 1);
-            default:
-                return originalSpeed;
+    modImpl.modInterface.replaceMethod(
+        shapez.HubGoals,
+        "getProcessorBaseSpeed",
+        function ($original, [processorType]) {
+            const originalSpeed = $original(processorType);
+            switch (processorType) {
+                case enumItemProcessorTypes.balancer:
+                    return originalSpeed * (currentIngame.trapThrottled.balancer ? 0.5 : 1);
+                case enumItemProcessorTypes.mixer:
+                    return originalSpeed * (currentIngame.trapThrottled.mixer ? 0.5 : 1);
+                case enumItemProcessorTypes.painter:
+                case enumItemProcessorTypes.painterDouble:
+                case enumItemProcessorTypes.painterQuad:
+                    return originalSpeed * (currentIngame.trapThrottled.painter ? 0.5 : 1);
+                case enumItemProcessorTypes.cutter:
+                case enumItemProcessorTypes.cutterQuad:
+                    return originalSpeed * (currentIngame.trapThrottled.cutter ? 0.5 : 1);
+                case enumItemProcessorTypes.rotater:
+                case enumItemProcessorTypes.rotaterCCW:
+                case enumItemProcessorTypes.rotater180:
+                    return originalSpeed * (currentIngame.trapThrottled.rotator ? 0.5 : 1);
+                case enumItemProcessorTypes.stacker:
+                    return originalSpeed * (currentIngame.trapThrottled.stacker ? 0.5 : 1);
+                default:
+                    return originalSpeed;
+            }
         }
-    });
+    );
     // getAvailableVariants
-    modImpl.modInterface.replaceMethod(shapez.MetaPainterBuilding, methodNames.metaBuildings.getAvailableVariants, function ($original, [root]) {
-        if (connection) {
-            let variants = [];
-            if (currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_painter)) {
-                variants.push(defaultBuildingVariant, enumPainterVariants.mirrored);
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaPainterBuilding,
+        methodNames.metaBuildings.getAvailableVariants,
+        function ($original, [root]) {
+            if (connection) {
+                const variants = [];
+                if (currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_painter)) {
+                    variants.push(defaultBuildingVariant, enumPainterVariants.mirrored);
+                }
+                if (currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_painter_double)) {
+                    variants.push(enumPainterVariants.double);
+                }
+                if (
+                    currentIngame.root.hubGoals.isRewardUnlocked(customRewards.painter_quad) &&
+                    currentIngame.root.gameMode.getSupportsWires()
+                ) {
+                    variants.push(enumPainterVariants.quad);
+                }
+                return variants;
+            } else {
+                return $original(root);
             }
-            if (currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_painter_double)) {
-                variants.push(enumPainterVariants.double);
-            }
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaBalancerBuilding,
+        methodNames.metaBuildings.getAvailableVariants,
+        function ($original, [root]) {
+            const available = $original(root);
             if (
-                currentIngame.root.hubGoals.isRewardUnlocked(customRewards.painter_quad) &&
-                currentIngame.root.gameMode.getSupportsWires()
+                connection &&
+                !currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_balancer)
             ) {
-                variants.push(enumPainterVariants.quad);
+                const defaultindex = available.indexOf("default");
+                if (defaultindex > -1) {
+                    available.splice(defaultindex, 1);
+                }
             }
-            return variants;
-        } else {
-            return $original(root);
+            return available;
         }
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaBalancerBuilding, methodNames.metaBuildings.getAvailableVariants, function ($original, [root]) {
-        var available = $original(root);
-        if (connection && !currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_balancer)) {
-            var defaultindex = available.indexOf("default");
-            if (defaultindex > -1) {
-                available.splice(defaultindex, 1);
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaUndergroundBeltBuilding,
+        methodNames.metaBuildings.getAvailableVariants,
+        function ($original, [root]) {
+            const available = $original(root);
+            if (
+                connection &&
+                !currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_tunnel)
+            ) {
+                const defaultindex = available.indexOf("default");
+                if (defaultindex > -1) {
+                    available.splice(defaultindex, 1);
+                }
             }
+            return available;
         }
-        return available;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaUndergroundBeltBuilding, methodNames.metaBuildings.getAvailableVariants, function ($original, [root]) {
-        var available = $original(root);
-        if (connection && !currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_tunnel)) {
-            var defaultindex = available.indexOf("default");
-            if (defaultindex > -1) {
-                available.splice(defaultindex, 1);
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaCutterBuilding,
+        methodNames.metaBuildings.getAvailableVariants,
+        function ($original, [root]) {
+            const available = $original(root);
+            if (connection && !currentIngame.root.hubGoals.isRewardUnlocked(customRewards.cutter)) {
+                const defaultindex = available.indexOf("default");
+                if (defaultindex > -1) {
+                    available.splice(defaultindex, 1);
+                }
             }
+            return available;
         }
-        return available;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaCutterBuilding, methodNames.metaBuildings.getAvailableVariants, function ($original, [root]) {
-        var available = $original(root);
-        if (connection && !currentIngame.root.hubGoals.isRewardUnlocked(customRewards.cutter)) {
-            var defaultindex = available.indexOf("default");
-            if (defaultindex > -1) {
-                available.splice(defaultindex, 1);
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaRotaterBuilding,
+        methodNames.metaBuildings.getAvailableVariants,
+        function ($original, [root]) {
+            const available = $original(root);
+            if (
+                connection &&
+                !currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater)
+            ) {
+                const defaultindex = available.indexOf("default");
+                if (defaultindex > -1) {
+                    available.splice(defaultindex, 1);
+                }
             }
+            return available;
         }
-        return available;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaRotaterBuilding, methodNames.metaBuildings.getAvailableVariants, function ($original, [root]) {
-        var available = $original(root);
-        if (connection && !currentIngame.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater)) {
-            var defaultindex = available.indexOf("default");
-            if (defaultindex > -1) {
-                available.splice(defaultindex, 1);
-            }
-        }
-        return available;
-    });
+    );
     // shapeActions
-    modImpl.modInterface.replaceMethod(shapez.ShapeDefinitionManager, "shapeActionCutHalf", function ($original, [definition]) {
-        if (definition instanceof ShapeDefinition) {
-            if (!currentIngame.trapMalfunction.cutter) {
+    modImpl.modInterface.replaceMethod(
+        shapez.ShapeDefinitionManager,
+        "shapeActionCutHalf",
+        function ($original, [definition]) {
+            if (definition instanceof ShapeDefinition) {
+                if (!currentIngame.trapMalfunction.cutter) {
+                    return $original(definition);
+                }
+                const key = "cut-mal/" + definition.getHash();
+                if (this.operationCache[key]) {
+                    return /** @type {[ShapeDefinition, ShapeDefinition]} */ (this.operationCache[key]);
+                }
+                const rightSide = definition.cloneFilteredByQuadrants([3, 0]);
+                const leftSide = definition.cloneFilteredByQuadrants([1, 2]);
+                this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.cutShape, null);
+                return /** @type {[ShapeDefinition, ShapeDefinition]} */ (
+                    this.operationCache[key] = [
+                        this.registerOrReturnHandle(rightSide),
+                        this.registerOrReturnHandle(leftSide),
+                    ]
+                );
+            } else {
+                modImpl.dialogs.showInfo(
+                    shapez.T.mods.shapezipelago.infoBox.impossible.title,
+                    `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionCutHalf}`
+                );
+                return $original(definition); // damn "unknown"
+            }
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.ShapeDefinitionManager,
+        "shapeActionCutQuad",
+        function ($original, [definition]) {
+            if (!(definition instanceof ShapeDefinition)) {
+                modImpl.dialogs.showInfo(
+                    shapez.T.mods.shapezipelago.infoBox.impossible.title,
+                    `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionCutQuad}`
+                );
                 return $original(definition);
             }
-            const key = "cut-mal/" + definition.getHash();
-            if (this.operationCache[key]) {
-                return /** @type {[ShapeDefinition, ShapeDefinition]} */ (this.operationCache[key]);
+            if (!currentIngame.trapMalfunction.cutter_quad) {
+                return $original(definition);
             }
-            const rightSide = definition.cloneFilteredByQuadrants([3, 0]);
-            const leftSide = definition.cloneFilteredByQuadrants([1, 2]);
-            this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.cutShape, null);
-            return /** @type {[ShapeDefinition, ShapeDefinition]} */ (this.operationCache[key] = [
-                this.registerOrReturnHandle(rightSide),
-                this.registerOrReturnHandle(leftSide),
-            ]);
-        } else {
-            modImpl.dialogs.showInfo(shapez.T.mods.shapezipelago.infoBox.impossible.title, 
-                `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${
-                    shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionCutHalf}`);
-            return $original(definition); // damn "unknown"
+            const key = "cut-quad-mal/" + definition.getHash();
+            if (this.operationCache[key]) {
+                return /** @type {[ShapeDefinition, ShapeDefinition, ShapeDefinition, ShapeDefinition]} */ (
+                    this.operationCache[key]
+                );
+            }
+            const rotated = definition.cloneRotateCW();
+            return /** @type {[ShapeDefinition, ShapeDefinition, ShapeDefinition, ShapeDefinition]} */ (
+                this.operationCache[key] = [
+                    this.registerOrReturnHandle(rotated.cloneFilteredByQuadrants([2])),
+                    this.registerOrReturnHandle(rotated.cloneFilteredByQuadrants([0])),
+                    this.registerOrReturnHandle(rotated.cloneFilteredByQuadrants([1])),
+                    this.registerOrReturnHandle(rotated.cloneFilteredByQuadrants([3])),
+                ]
+            );
         }
-    });
-    modImpl.modInterface.replaceMethod(shapez.ShapeDefinitionManager, "shapeActionCutQuad", function ($original, [definition]) {
-        if (!(definition instanceof ShapeDefinition)) {
-            modImpl.dialogs.showInfo(shapez.T.mods.shapezipelago.infoBox.impossible.title, 
-                `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${
-                    shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionCutQuad}`);
-            return $original(definition);
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.ShapeDefinitionManager,
+        "shapeActionRotateCW",
+        function ($original, [definition]) {
+            if (!(definition instanceof ShapeDefinition)) {
+                modImpl.dialogs.showInfo(
+                    shapez.T.mods.shapezipelago.infoBox.impossible.title,
+                    `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionRotateCW}`
+                );
+                return $original(definition);
+            }
+            if (!currentIngame.trapMalfunction.rotator) {
+                return $original(definition);
+            }
+            const key = "rotate-ccw/" + definition.getHash();
+            if (this.operationCache[key]) {
+                return /** @type {ShapeDefinition} */ (this.operationCache[key]);
+            }
+            const rotated = definition.cloneRotateCCW();
+            this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.rotateShape, null);
+            return /** @type {ShapeDefinition} */ (
+                this.operationCache[key] = this.registerOrReturnHandle(rotated)
+            );
         }
-        if (!currentIngame.trapMalfunction.cutter_quad) {
-            return $original(definition);
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.ShapeDefinitionManager,
+        "shapeActionRotateCCW",
+        function ($original, [definition]) {
+            if (!(definition instanceof ShapeDefinition)) {
+                modImpl.dialogs.showInfo(
+                    shapez.T.mods.shapezipelago.infoBox.impossible.title,
+                    `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionRotateCCW}`
+                );
+                return $original(definition);
+            }
+            if (!currentIngame.trapMalfunction.rotator_ccw) {
+                return $original(definition);
+            }
+            const key = "rotate-fl/" + definition.getHash();
+            if (this.operationCache[key]) {
+                return /** @type {ShapeDefinition} */ (this.operationCache[key]);
+            }
+            const rotated = definition.cloneRotate180();
+            return /** @type {ShapeDefinition} */ (
+                this.operationCache[key] = this.registerOrReturnHandle(rotated)
+            );
         }
-        const key = "cut-quad-mal/" + definition.getHash();
-        if (this.operationCache[key]) {
-            return /** @type {[ShapeDefinition, ShapeDefinition, ShapeDefinition, ShapeDefinition]} */ (this
-                .operationCache[key]);
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.ShapeDefinitionManager,
+        "shapeActionRotate180",
+        function ($original, [definition]) {
+            if (!(definition instanceof ShapeDefinition)) {
+                modImpl.dialogs.showInfo(
+                    shapez.T.mods.shapezipelago.infoBox.impossible.title,
+                    `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionRotate180}`
+                );
+                return $original(definition);
+            }
+            if (!currentIngame.trapMalfunction.rotator_180) {
+                return $original(definition);
+            }
+            const key = "rotate-cw/" + definition.getHash();
+            if (this.operationCache[key]) {
+                return /** @type {ShapeDefinition} */ (this.operationCache[key]);
+            }
+            const rotated = definition.cloneRotateCW();
+            return /** @type {ShapeDefinition} */ (
+                this.operationCache[key] = this.registerOrReturnHandle(rotated)
+            );
         }
-        const rotated = definition.cloneRotateCW();
-        return /** @type {[ShapeDefinition, ShapeDefinition, ShapeDefinition, ShapeDefinition]} */ (this.operationCache[
-            key
-        ] = [
-            this.registerOrReturnHandle(rotated.cloneFilteredByQuadrants([2])),
-            this.registerOrReturnHandle(rotated.cloneFilteredByQuadrants([0])),
-            this.registerOrReturnHandle(rotated.cloneFilteredByQuadrants([1])),
-            this.registerOrReturnHandle(rotated.cloneFilteredByQuadrants([3])),
-        ]);
-    });
-    modImpl.modInterface.replaceMethod(shapez.ShapeDefinitionManager, "shapeActionRotateCW", function ($original, [definition]) {
-        if (!(definition instanceof ShapeDefinition)) {
-            modImpl.dialogs.showInfo(shapez.T.mods.shapezipelago.infoBox.impossible.title, 
-                `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${
-                    shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionRotateCW}`);
-            return $original(definition);
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.ShapeDefinitionManager,
+        "shapeActionStack",
+        function ($original, [lowerDefinition, upperDefinition]) {
+            if (!currentIngame.trapMalfunction.stacker) {
+                return $original(lowerDefinition, upperDefinition);
+            } else {
+                return $original(upperDefinition, lowerDefinition);
+            }
         }
-        if (!currentIngame.trapMalfunction.rotator) {
-            return $original(definition);
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.ShapeDefinitionManager,
+        "shapeActionPaintWith",
+        function ($original, [definition, color]) {
+            if (!(definition instanceof ShapeDefinition)) {
+                modImpl.dialogs.showInfo(
+                    shapez.T.mods.shapezipelago.infoBox.impossible.title,
+                    `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionPaintWith}`
+                );
+                return $original(definition);
+            }
+            if (!currentIngame.trapMalfunction.painter) {
+                return $original(definition, color);
+            }
+            const key = "paint-mal/" + definition.getHash() + "/" + color;
+            if (this.operationCache[key]) {
+                return /** @type {ShapeDefinition} */ (this.operationCache[key]);
+            }
+            this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.paintShape, null);
+            const randomizedColors = [
+                Math.random() < 0.75 ? color : null,
+                Math.random() < 0.75 ? color : null,
+                Math.random() < 0.75 ? color : null,
+                Math.random() < 0.75 ? color : null,
+            ];
+            // @ts-ignore
+            const colorized = definition.cloneAndPaintWith4Colors(randomizedColors);
+            return /** @type {ShapeDefinition} */ (
+                this.operationCache[key] = this.registerOrReturnHandle(colorized)
+            );
         }
-        const key = "rotate-ccw/" + definition.getHash();
-        if (this.operationCache[key]) {
-            return /** @type {ShapeDefinition} */ (this.operationCache[key]);
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.ShapeDefinitionManager,
+        "shapeActionPaintWith4Colors",
+        function ($original, [definition, colors]) {
+            if (!(definition instanceof ShapeDefinition)) {
+                modImpl.dialogs.showInfo(
+                    shapez.T.mods.shapezipelago.infoBox.impossible.title,
+                    `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionPaintWith4Colors}`
+                );
+                return $original(definition);
+            }
+            if (!currentIngame.trapMalfunction.painter_quad) {
+                return $original(definition, colors);
+            }
+            const randomizedColors = [
+                colors[Math.floor(Math.random() * 4)],
+                colors[Math.floor(Math.random() * 4)],
+                colors[Math.floor(Math.random() * 4)],
+                colors[Math.floor(Math.random() * 4)],
+            ];
+            const key = "paint4/" + definition.getHash() + "/" + randomizedColors.join(",");
+            if (this.operationCache[key]) {
+                return /** @type {ShapeDefinition} */ (this.operationCache[key]);
+            }
+            // @ts-ignore
+            const colorized = definition.cloneAndPaintWith4Colors(randomizedColors);
+            return /** @type {ShapeDefinition} */ (
+                this.operationCache[key] = this.registerOrReturnHandle(colorized)
+            );
         }
-        const rotated = definition.cloneRotateCCW();
-        this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.rotateShape, null);
-        return /** @type {ShapeDefinition} */ (this.operationCache[key] = this.registerOrReturnHandle(
-            rotated
-        ));
-    });
-    modImpl.modInterface.replaceMethod(shapez.ShapeDefinitionManager, "shapeActionRotateCCW", function ($original, [definition]) {
-        if (!(definition instanceof ShapeDefinition)) {
-            modImpl.dialogs.showInfo(shapez.T.mods.shapezipelago.infoBox.impossible.title, 
-                `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${
-                    shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionRotateCCW}`);
-            return $original(definition);
-        }
-        if (!currentIngame.trapMalfunction.rotator_ccw) {
-            return $original(definition);
-        }
-        const key = "rotate-fl/" + definition.getHash();
-        if (this.operationCache[key]) {
-            return /** @type {ShapeDefinition} */ (this.operationCache[key]);
-        }
-        const rotated = definition.cloneRotate180();
-        return /** @type {ShapeDefinition} */ (this.operationCache[key] = this.registerOrReturnHandle(
-            rotated
-        ));
-    });
-    modImpl.modInterface.replaceMethod(shapez.ShapeDefinitionManager, "shapeActionRotate180", function ($original, [definition]) {
-        if (!(definition instanceof ShapeDefinition)) {
-            modImpl.dialogs.showInfo(shapez.T.mods.shapezipelago.infoBox.impossible.title, 
-                `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${
-                    shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionRotate180}`);
-            return $original(definition);
-        }
-        if (!currentIngame.trapMalfunction.rotator_180) {
-            return $original(definition);
-        }
-        const key = "rotate-cw/" + definition.getHash();
-        if (this.operationCache[key]) {
-            return /** @type {ShapeDefinition} */ (this.operationCache[key]);
-        }
-        const rotated = definition.cloneRotateCW();
-        return /** @type {ShapeDefinition} */ (this.operationCache[key] = this.registerOrReturnHandle(
-            rotated
-        ));
-    });
-    modImpl.modInterface.replaceMethod(shapez.ShapeDefinitionManager, "shapeActionStack", function ($original, [lowerDefinition, upperDefinition]) {
-        if (!currentIngame.trapMalfunction.stacker) {
-            return $original(lowerDefinition, upperDefinition);
-        } else {
-            return $original(upperDefinition, lowerDefinition);
-        }
-    });
-    modImpl.modInterface.replaceMethod(shapez.ShapeDefinitionManager, "shapeActionPaintWith", function ($original, [definition, color]) {
-        if (!(definition instanceof ShapeDefinition)) {
-            modImpl.dialogs.showInfo(shapez.T.mods.shapezipelago.infoBox.impossible.title, 
-                `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${
-                    shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionPaintWith}`);
-            return $original(definition);
-        }
-        if (false) {
-            modImpl.dialogs.showInfo("You just found a bug! :)", "Please report this to the author of the mod: "
-                +"<br />This stupid color parameter in shapeActionPaintWith drives me crazy."
-                +"<br />Why is it not an enumColor? What have I done to deserve this?"
-                +"<br />And all of this just to not have these stupid @ts-ignore tags that make overlook actual errors."
-                +"<br />Why do these parameters have to be unknown?"
-                +"<br />Why Tobias, why?");
-            return $original(definition);
-        }
-        if (!currentIngame.trapMalfunction.painter) {
-            return $original(definition, color);
-        }
-        const key = "paint-mal/" + definition.getHash() + "/" + color;
-        if (this.operationCache[key]) {
-            return /** @type {ShapeDefinition} */ (this.operationCache[key]);
-        }
-        this.root.signals.achievementCheck.dispatch(ACHIEVEMENTS.paintShape, null);
-        const randomizedColors = [
-            Math.random() < 0.75 ? color : null,
-            Math.random() < 0.75 ? color : null,
-            Math.random() < 0.75 ? color : null,
-            Math.random() < 0.75 ? color : null
-        ];
-        // @ts-ignore
-        const colorized = definition.cloneAndPaintWith4Colors(randomizedColors);
-        return /** @type {ShapeDefinition} */ (this.operationCache[key] = this.registerOrReturnHandle(
-            colorized
-        ));
-    });
-    modImpl.modInterface.replaceMethod(shapez.ShapeDefinitionManager, "shapeActionPaintWith4Colors", function ($original, [definition, colors]) {
-        if (!(definition instanceof ShapeDefinition)) {
-            modImpl.dialogs.showInfo(shapez.T.mods.shapezipelago.infoBox.impossible.title, 
-                `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${
-                    shapez.T.mods.shapezipelago.infoBox.impossible.shapeActionPaintWith4Colors}`);
-            return $original(definition);
-        }
-        if (!currentIngame.trapMalfunction.painter_quad) {
-            return $original(definition, colors);
-        }
-        const randomizedColors = [
-            colors[Math.floor(Math.random()*4)],
-            colors[Math.floor(Math.random()*4)],
-            colors[Math.floor(Math.random()*4)],
-            colors[Math.floor(Math.random()*4)]
-        ];
-        const key = "paint4/" + definition.getHash() + "/" + randomizedColors.join(",");
-        if (this.operationCache[key]) {
-            return /** @type {ShapeDefinition} */ (this.operationCache[key]);
-        }
-        // @ts-ignore
-        const colorized = definition.cloneAndPaintWith4Colors(randomizedColors);
-        return /** @type {ShapeDefinition} */ (this.operationCache[key] = this.registerOrReturnHandle(
-            colorized
-        ));
-    });
+    );
     // keyboard button pressing
-    modImpl.modInterface.replaceMethod(shapez.HUDWiresOverlay, "switchLayers", function ($original, []) {
+    modImpl.modInterface.replaceMethod(shapez.HUDWiresOverlay, "switchLayers", function ($original) {
         if (!connection) {
             $original();
         }
@@ -512,8 +719,8 @@ export function overrideBuildings() {
         }
         if (this.root.currentLayer === "regular") {
             if (
-                this.root.hubGoals.isRewardUnlocked(customRewards.wires) 
-                || this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_wires_painter_and_levers)
+                this.root.hubGoals.isRewardUnlocked(customRewards.wires) ||
+                this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_wires_painter_and_levers)
             ) {
                 this.root.currentLayer = "wires";
             }
@@ -522,10 +729,14 @@ export function overrideBuildings() {
         }
         this.root.signals.editModeChanged.dispatch(this.root.currentLayer);
     });
-    modImpl.modInterface.replaceMethod(shapez.HUDBuildingPlacerLogic, "startPipette", function ($original, []) {
-        if (this.root.camera.getIsMapOverlayActive()) return;
+    modImpl.modInterface.replaceMethod(shapez.HUDBuildingPlacerLogic, "startPipette", function ($original) {
+        if (this.root.camera.getIsMapOverlayActive()) {
+            return;
+        }
         const mousePosition = this.root.app.mousePosition;
-        if (!mousePosition) return;
+        if (!mousePosition) {
+            return;
+        }
         const worldPos = this.root.camera.screenToWorld(mousePosition);
         const tile = worldPos.toTileSpace();
         const contents = this.root.map.getTileContent(tile, this.root.currentLayer);
@@ -536,8 +747,8 @@ export function overrideBuildings() {
                 this.root.app.settings.getAllSettings().pickMinerOnPatch &&
                 this.root.currentLayer === "regular" &&
                 this.root.gameMode.hasResources() &&
-                (this.root.hubGoals.isRewardUnlocked(customRewards.extractor) 
-                || this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_miner_chainable))
+                (this.root.hubGoals.isRewardUnlocked(customRewards.extractor) ||
+                    this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_miner_chainable))
             ) {
                 this.currentMetaBuilding.set(gMetaBuildingRegistry.findByClass(MetaMinerBuilding));
                 if (this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_miner_chainable)) {
@@ -571,110 +782,162 @@ export function overrideBuildings() {
         this.currentBaseRotation = contents.components.StaticMapEntity.rotation;
     });
     // getAdditionalStatistics
-    modImpl.modInterface.replaceMethod(shapez.MetaMinerBuilding, methodNames.metaBuildings.getAdditionalStatistics, function ($original, [root, variant]) {
-        let stats = $original(root, variant);
-        stats.push([
-            shapez.T.mods.shapezipelago.statisticsBox.perBelt, 
-            Number(currentIngame.root.hubGoals.getBeltBaseSpeed() / currentIngame.root.hubGoals.getMinerBaseSpeed())
-                .toFixed(1).replace(".", shapez.T.global.decimalSeparator)
-        ]);
-        return stats;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaCutterBuilding, methodNames.metaBuildings.getAdditionalStatistics, function ($original, [root, variant]) {
-        let stats = $original(root, variant);
-        stats.push([
-            shapez.T.mods.shapezipelago.statisticsBox.perBelt, 
-            Number(currentIngame.root.hubGoals.getBeltBaseSpeed()/currentIngame.root.hubGoals.getProcessorBaseSpeed(
-                variant === enumCutterVariants.quad ? enumItemProcessorTypes.cutterQuad : enumItemProcessorTypes.cutter
-            ))
-                .toFixed(1).replace(".", shapez.T.global.decimalSeparator)
-        ]);
-        return stats;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaRotaterBuilding, methodNames.metaBuildings.getAdditionalStatistics, function ($original, [root, variant]) {
-        var speed = 1;
-        if (variant === defaultBuildingVariant)
-            speed = currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.rotater);
-        else if (variant === enumRotaterVariants.ccw)
-            speed = currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.rotaterCCW);
-        else if (variant === enumRotaterVariants.rotate180)
-            speed = currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.rotater180);
-        let stats = $original(root, variant);
-        stats.push([
-            shapez.T.mods.shapezipelago.statisticsBox.perBelt, 
-            Number(currentIngame.root.hubGoals.getBeltBaseSpeed()/speed)
-                .toFixed(1).replace(".", shapez.T.global.decimalSeparator)
-        ]);
-        return stats;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaStackerBuilding, methodNames.metaBuildings.getAdditionalStatistics, function ($original, [root, variant]) {
-        let stats = $original(root, variant);
-        stats.push([
-            shapez.T.mods.shapezipelago.statisticsBox.perBelt, 
-            Number(currentIngame.root.hubGoals.getBeltBaseSpeed()/currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.stacker))
-                .toFixed(1).replace(".", shapez.T.global.decimalSeparator)
-        ]);
-        return stats;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaPainterBuilding, methodNames.metaBuildings.getAdditionalStatistics, function ($original, [root, variant]) {
-        var speed = 1;
-        if (variant === defaultBuildingVariant || variant === enumPainterVariants.mirrored)
-            speed = currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.painter);
-        else if (variant === enumPainterVariants.double)
-            speed = currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.painterDouble)*2;
-        else if (variant === enumPainterVariants.quad)
-            speed = currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.painterQuad);
-        let stats = $original(root, variant);
-        stats.push([
-            shapez.T.mods.shapezipelago.statisticsBox.perBelt, 
-            Number(currentIngame.root.hubGoals.getBeltBaseSpeed()/speed)
-                .toFixed(1).replace(".", shapez.T.global.decimalSeparator)
-        ]);
-        return stats;
-    });
-    modImpl.modInterface.replaceMethod(shapez.MetaMixerBuilding, methodNames.metaBuildings.getAdditionalStatistics, function ($original, [root, variant]) {
-        let stats = $original(root, variant);
-        stats.push([
-            shapez.T.mods.shapezipelago.statisticsBox.perBelt, 
-            Number(currentIngame.root.hubGoals.getBeltBaseSpeed()/currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.mixer))
-                .toFixed(1).replace(".", shapez.T.global.decimalSeparator)
-        ]);
-        return stats;
-    });
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaMinerBuilding,
+        methodNames.metaBuildings.getAdditionalStatistics,
+        function ($original, [root, variant]) {
+            const stats = $original(root, variant);
+            stats.push([
+                shapez.T.mods.shapezipelago.statisticsBox.perBelt,
+                Number(
+                    currentIngame.root.hubGoals.getBeltBaseSpeed() /
+                        currentIngame.root.hubGoals.getMinerBaseSpeed()
+                )
+                    .toFixed(1)
+                    .replace(".", shapez.T.global.decimalSeparator),
+            ]);
+            return stats;
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaCutterBuilding,
+        methodNames.metaBuildings.getAdditionalStatistics,
+        function ($original, [root, variant]) {
+            const stats = $original(root, variant);
+            stats.push([
+                shapez.T.mods.shapezipelago.statisticsBox.perBelt,
+                Number(
+                    currentIngame.root.hubGoals.getBeltBaseSpeed() /
+                        currentIngame.root.hubGoals.getProcessorBaseSpeed(
+                            variant === enumCutterVariants.quad
+                                ? enumItemProcessorTypes.cutterQuad
+                                : enumItemProcessorTypes.cutter
+                        )
+                )
+                    .toFixed(1)
+                    .replace(".", shapez.T.global.decimalSeparator),
+            ]);
+            return stats;
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaRotaterBuilding,
+        methodNames.metaBuildings.getAdditionalStatistics,
+        function ($original, [root, variant]) {
+            let speed = 1;
+            if (variant === defaultBuildingVariant) {
+                speed = currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.rotater);
+            } else if (variant === enumRotaterVariants.ccw) {
+                speed = currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.rotaterCCW);
+            } else if (variant === enumRotaterVariants.rotate180) {
+                speed = currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.rotater180);
+            }
+            const stats = $original(root, variant);
+            stats.push([
+                shapez.T.mods.shapezipelago.statisticsBox.perBelt,
+                Number(currentIngame.root.hubGoals.getBeltBaseSpeed() / speed)
+                    .toFixed(1)
+                    .replace(".", shapez.T.global.decimalSeparator),
+            ]);
+            return stats;
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaStackerBuilding,
+        methodNames.metaBuildings.getAdditionalStatistics,
+        function ($original, [root, variant]) {
+            const stats = $original(root, variant);
+            stats.push([
+                shapez.T.mods.shapezipelago.statisticsBox.perBelt,
+                Number(
+                    currentIngame.root.hubGoals.getBeltBaseSpeed() /
+                        currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.stacker)
+                )
+                    .toFixed(1)
+                    .replace(".", shapez.T.global.decimalSeparator),
+            ]);
+            return stats;
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaPainterBuilding,
+        methodNames.metaBuildings.getAdditionalStatistics,
+        function ($original, [root, variant]) {
+            let speed = 1;
+            if (variant === defaultBuildingVariant || variant === enumPainterVariants.mirrored) {
+                speed = currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.painter);
+            } else if (variant === enumPainterVariants.double) {
+                speed =
+                    currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.painterDouble) *
+                    2;
+            } else if (variant === enumPainterVariants.quad) {
+                speed = currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.painterQuad);
+            }
+            const stats = $original(root, variant);
+            stats.push([
+                shapez.T.mods.shapezipelago.statisticsBox.perBelt,
+                Number(currentIngame.root.hubGoals.getBeltBaseSpeed() / speed)
+                    .toFixed(1)
+                    .replace(".", shapez.T.global.decimalSeparator),
+            ]);
+            return stats;
+        }
+    );
+    modImpl.modInterface.replaceMethod(
+        shapez.MetaMixerBuilding,
+        methodNames.metaBuildings.getAdditionalStatistics,
+        function ($original, [root, variant]) {
+            const stats = $original(root, variant);
+            stats.push([
+                shapez.T.mods.shapezipelago.statisticsBox.perBelt,
+                Number(
+                    currentIngame.root.hubGoals.getBeltBaseSpeed() /
+                        currentIngame.root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.mixer)
+                )
+                    .toFixed(1)
+                    .replace(".", shapez.T.global.decimalSeparator),
+            ]);
+            return stats;
+        }
+    );
     // Cosmetic randomization and shuffling
-    modImpl.modInterface.replaceMethod(shapez.HUDBaseToolbar, "initialize", function ($original, []) {
-        aptry("Toolbar initializing failed", () => {
+    modImpl.modInterface.replaceMethod(shapez.HUDBaseToolbar, "initialize", function ($original) {
+        apTry("Toolbar initializing failed", () => {
             // This code is used in 2 seperate places
             const shuffle = () => {
                 /**
                  * @type {Array<typeof MetaBuilding>}
                  */
-                let allBuildings = this.allBuildings.slice();
-                let random = new RandomNumberGenerator(connection.clientSeed);
+                const allBuildings = this.allBuildings.slice();
+                const random = new RandomNumberGenerator(connection.clientSeed);
                 this.primaryBuildings = [];
                 this.secondaryBuildings = [];
                 while (allBuildings.length) {
-                    let nextBuilding = allBuildings.splice(random.nextIntRange(0, allBuildings.length), 1)[0];
-                    if (this.primaryBuildings.length >= 12 || random.choice([true, false]))
+                    const nextBuilding = allBuildings.splice(
+                        random.nextIntRange(0, allBuildings.length),
+                        1
+                    )[0];
+                    if (this.primaryBuildings.length >= 12 || random.choice([true, false])) {
                         this.secondaryBuildings.push(nextBuilding);
-                    else
+                    } else {
                         this.primaryBuildings.push(nextBuilding);
+                    }
                 }
-                if (this.primaryBuildings.length == 0) {
+                if (this.primaryBuildings.length === 0) {
                     this.primaryBuildings.push(this.secondaryBuildings.pop());
                 }
             };
             /**@type {GameRoot} */
             const root = this.root;
             if (!root.savegame.hasGameDump()) {
-                apdebuglog("Initializing toolbar");
+                apDebugLog("Initializing toolbar");
                 if (connection && connection.isToolbarShuffled) {
                     shuffle();
                 }
                 $original();
             } else {
                 currentIngame.lateToolbarInitializations[this.htmlElementId] = () => {
-                    apdebuglog("Late initializing toolbar");
+                    apDebugLog("Late initializing toolbar");
                     if (connection && connection.isToolbarShuffled) {
                         shuffle();
                     }
@@ -686,8 +949,8 @@ export function overrideBuildings() {
 }
 
 export function overrideStateMoving() {
-    apdebuglog("Calling overrideStateMoving");
-    modImpl.modInterface.replaceMethod(shapez.InGameState, "stage4bResumeGame", function ($original, []) {
+    apDebugLog("Calling overrideStateMoving");
+    modImpl.modInterface.replaceMethod(shapez.InGameState, "stage4bResumeGame", function ($original) {
         if (this.switchStage(GAME_LOADING_STATES.s4_B_resumeGame)) {
             if (!this.core.initExistingGame()) {
                 this.onInitializationFailure("Savegame is corrupt and can not be restored.");
@@ -695,7 +958,7 @@ export function overrideStateMoving() {
             }
             // This needs to "pause" if trying to connect
             if (!currentIngame.isTryingToConnect) {
-                apdebuglog("Switching to stage 5 without trying to connect");
+                apDebugLog("Switching to stage 5 without trying to connect");
                 this.app.gameAnalytics.handleGameResumed();
                 this.stage5FirstUpdate();
             }
@@ -704,13 +967,13 @@ export function overrideStateMoving() {
 }
 
 /**
- * 
+ *
  * @returns {{shape: string; required: number; reward: string; throughputOnly: boolean;}[]}
  */
 function calcLevelDefinitions() {
-    if (connection.israndomizedLevels) {
+    if (connection.isRandomizedLevels) {
         const randomizer = new RandomNumberGenerator(connection.clientSeed);
-        var logic = connection.levelsLogic;
+        const logic = connection.levelsLogic;
         if (logic.startsWith("vanilla")) {
             return randomizedVanillaStepsShapes(randomizer);
         } else if (logic.startsWith("stretched")) {
@@ -726,17 +989,18 @@ function calcLevelDefinitions() {
         } else if (logic === "dopamine_overflow") {
             return randomizedHardcoreDopamineShapes(randomizer, 0);
         } else {
-            apassert(false, "Illegal level logic type: " + logic);
+            apAssert(false, "Illegal level logic type: " + logic);
         }
     } else {
-        return vanillaShapes();
+        // @ts-ignore
+        return enumVanillaShapes;
     }
 }
 
 function calcUpgradeDefinitions() {
     if (connection.isRandomizedUpgrades) {
         const randomizer = new RandomNumberGenerator(connection.clientSeed);
-        var logic = connection.upgradesLogic;
+        const logic = connection.upgradesLogic;
         if (logic === "vanilla_like") {
             return vanillaLikeUpgradeShapes(randomizer);
         } else if (logic === "linear") {
@@ -754,46 +1018,48 @@ function calcUpgradeDefinitions() {
 }
 
 function resyncLocationChecks() {
-    apdebuglog("Resyncing already reached locations");
-    let toResync = [];
+    apDebugLog("Resyncing already reached locations");
+    const toResync = [];
     // resync levels
-    for (var i = 1; i < currentIngame.root.hubGoals.level; i++) { // current level is what is to be completed
+    for (let i = 1; i < currentIngame.root.hubGoals.level; ++i) {
+        // current level is what is to be completed
         toResync.push(`Level ${i}`);
     }
     if (currentIngame.root.hubGoals.level > 20) {
         toResync.push("Level 20 Additional", "Level 20 Additional 2");
-    } 
+    }
     if (currentIngame.root.hubGoals.level > 1) {
         toResync.push("Level 1 Additional");
     }
     // resync upgrades
-    for (var upgradeId of ["belt", "miner", "processors", "painting"]) {
+    for (const upgradeId of ["belt", "miner", "processors", "painting"]) {
         const currentLevel = currentIngame.root.hubGoals.getUpgradeLevel(upgradeId);
-        for (var i = 1; i <= currentLevel; i++) {
-            toResync.push(upgradeIdNames[upgradeId] + " Upgrade Tier " + roman(i+1));
+        for (let i = 1; i <= currentLevel; ++i) {
+            toResync.push(upgradeIdNames[upgradeId] + " Upgrade Tier " + roman(i + 1));
         }
     }
     // Send resync packet
     bulkCheckLocation("Resynced", false, toResync);
     // resync shapesanity
-    for (var [hash, amount] of Object.entries(currentIngame.root.hubGoals.storedShapes)) {
+    for (const [hash, amount] of Object.entries(currentIngame.root.hubGoals.storedShapes)) {
         if ((amount || 0) > 0) {
             shapesanityAnalyzer(ShapeDefinition.fromShortKey(hash));
         }
     }
     // resync goals
     if (connection.goal === "vanilla" || connection.goal === "mam") {
-        if (connection.levelsToGenerate < currentIngame.root.hubGoals.level) 
+        if (connection.levelsToGenerate < currentIngame.root.hubGoals.level) {
             checkLocation("Checked", true);
+        }
     } else if (connection.goal === "even_fasterer") {
         // upgrade levels start at 0, because it is used for index of upgrade definitions
-        if (currentIngame.root.hubGoals.getUpgradeLevel("belt") + 1 >= connection.tiersToGenerate 
-            && currentIngame.root.hubGoals.getUpgradeLevel("miner") + 1 >= connection.tiersToGenerate 
-            && currentIngame.root.hubGoals.getUpgradeLevel("processors") + 1 >= connection.tiersToGenerate 
-            && currentIngame.root.hubGoals.getUpgradeLevel("painting") + 1 >= connection.tiersToGenerate
+        if (
+            currentIngame.root.hubGoals.getUpgradeLevel("belt") + 1 >= connection.tiersToGenerate &&
+            currentIngame.root.hubGoals.getUpgradeLevel("miner") + 1 >= connection.tiersToGenerate &&
+            currentIngame.root.hubGoals.getUpgradeLevel("processors") + 1 >= connection.tiersToGenerate &&
+            currentIngame.root.hubGoals.getUpgradeLevel("painting") + 1 >= connection.tiersToGenerate
         ) {
             checkLocation("Checked", true);
         }
     }
 }
-

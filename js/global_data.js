@@ -1,4 +1,10 @@
-import { Client, CLIENT_PACKET_TYPE, CLIENT_STATUS, CONNECTION_STATUS, SERVER_PACKET_TYPE } from "archipelago.js";
+import {
+    Client,
+    CLIENT_PACKET_TYPE,
+    CLIENT_STATUS,
+    CONNECTION_STATUS,
+    SERVER_PACKET_TYPE,
+} from "archipelago.js";
 import { Signal } from "shapez/core/signal";
 import { GameRoot } from "shapez/game/root";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
@@ -8,9 +14,9 @@ export const methodNames = {
     metaBuildings: {
         getAvailableVariants: "getAvailableVariants",
         getIsUnlocked: "getIsUnlocked",
-        getAdditionalStatistics: "getAdditionalStatistics"
-    }
-}
+        getAdditionalStatistics: "getAdditionalStatistics",
+    },
+};
 
 export const customRewards = {
     belt: "reward_belt",
@@ -21,14 +27,14 @@ export const customRewards = {
     trash: "reward_trash",
     painter_quad: "reward_painter_quad",
     ap: "reward_ap",
-    easter_egg: "reward_easter_egg"
-}
+    easter_egg: "reward_easter_egg",
+};
 
 export const upgradeIdNames = {
     belt: "Belt",
     miner: "Miner",
     processors: "Processors",
-    painting: "Painting"
+    painting: "Painting",
 };
 
 export const achievementNames = {
@@ -76,23 +82,23 @@ export const achievementNames = {
     "noBeltUpgradesUntilBp": "It's so slow",
     "noInverseRotater": "King of Inefficiency",
     "play10h": "It's been a long time",
-    "play20h": "Addicted"
+    "play20h": "Addicted",
 };
 
 const translate = [
-    {key: 1000, val: "M"},
-    {key: 900, val: "CM"},
-    {key: 500, val: "D"},
-    {key: 400, val: "CD"},
-    {key: 100, val: "C"},
-    {key: 90, val: "XC"},
-    {key: 50, val: "L"},
-    {key: 40, val: "XL"},
-    {key: 10, val: "X"},
-    {key: 9, val: "IX"},
-    {key: 5, val: "V"},
-    {key: 4, val: "IV"},
-    {key: 1, val: "I"}
+    { key: 1000, val: "M" },
+    { key: 900, val: "CM" },
+    { key: 500, val: "D" },
+    { key: 400, val: "CD" },
+    { key: 100, val: "C" },
+    { key: 90, val: "XC" },
+    { key: 50, val: "L" },
+    { key: 40, val: "XL" },
+    { key: 10, val: "X" },
+    { key: 9, val: "IX" },
+    { key: 5, val: "V" },
+    { key: 4, val: "IV" },
+    { key: 1, val: "I" },
 ];
 
 export const baseBuildingNames = {
@@ -109,7 +115,7 @@ export const baseBuildingNames = {
     painter: "Painter",
     painter_quad: "Quad Painter",
     mixer: "Color Mixer",
-    trash: "Trash"
+    trash: "Trash",
 };
 
 export const subShapeNames = {
@@ -133,28 +139,28 @@ export const colorNames = {
 };
 
 export const getIsUnlockedForTrap = {
-    belt: (root) => {return root.hubGoals.isRewardUnlocked(customRewards.belt) && !currentIngame.trapLocked.belt},
-    balancer: (root) => {return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_balancer) && !currentIngame.trapLocked.balancer},
-    tunnel: (root) => {return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_tunnel) && !currentIngame.trapLocked.tunnel},
-    extractor: (root) => {return root.hubGoals.isRewardUnlocked(customRewards.extractor) && !currentIngame.trapLocked.extractor},
-    cutter: (root) => {return root.hubGoals.isRewardUnlocked(customRewards.cutter) && !currentIngame.trapLocked.cutter},
-    cutter_quad: (root) => {return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_cutter_quad) && !currentIngame.trapLocked.cutter},
-    rotator: (root) => {return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater) && !currentIngame.trapLocked.rotator},
-    rotator_ccw: (root) => {return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater_ccw) && !currentIngame.trapLocked.rotator},
-    rotator_180: (root) => {return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater_180) && !currentIngame.trapLocked.rotator},
-    stacker: (root) => {return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_stacker) && !currentIngame.trapLocked.stacker},
-    painter: (root) => {return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_painter) && !currentIngame.trapLocked.painter},
-    painter_quad: (root) => {return root.hubGoals.isRewardUnlocked(customRewards.painter_quad) && !currentIngame.trapLocked.painter},
-    mixer: (root) => {return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_mixer) && !currentIngame.trapLocked.mixer},
-    trash: (root) => {return root.hubGoals.isRewardUnlocked(customRewards.trash) && !currentIngame.trapLocked.trash}
+    belt: (root) => root.hubGoals.isRewardUnlocked(customRewards.belt) && !currentIngame.trapLocked.belt,
+    balancer: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_balancer) && !currentIngame.trapLocked.balancer,
+    tunnel: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_tunnel) && !currentIngame.trapLocked.tunnel,
+    extractor: (root) => root.hubGoals.isRewardUnlocked(customRewards.extractor) && !currentIngame.trapLocked.extractor,
+    cutter: (root) => root.hubGoals.isRewardUnlocked(customRewards.cutter) && !currentIngame.trapLocked.cutter,
+    cutter_quad: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_cutter_quad) && !currentIngame.trapLocked.cutter,
+    rotator: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater) && !currentIngame.trapLocked.rotator,
+    rotator_ccw: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater_ccw) && !currentIngame.trapLocked.rotator,
+    rotator_180: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater_180) && !currentIngame.trapLocked.rotator,
+    stacker: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_stacker) && !currentIngame.trapLocked.stacker,
+    painter: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_painter) && !currentIngame.trapLocked.painter,
+    painter_quad: (root) => root.hubGoals.isRewardUnlocked(customRewards.painter_quad) && !currentIngame.trapLocked.painter,
+    mixer: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_mixer) && !currentIngame.trapLocked.mixer,
+    trash: (root) => root.hubGoals.isRewardUnlocked(customRewards.trash) && !currentIngame.trapLocked.trash,
 };
 
 /**
  * @param {number} number
  */
 export function roman(number) {
-    var rom = "";
-    for (var i = 0; i < translate.length; i++) {
+    let rom = "";
+    for (let i = 0; i < translate.length; ++i) {
         while (number >= translate[i].key) {
             rom = rom + translate[i].val;
             number = number - translate[i].key;
@@ -166,11 +172,11 @@ export function roman(number) {
 /**
  * @param {string} message
  */
-export function apuserlog(message) {
+export function apUserLog(message) {
     console.log("%c[AP] " + message, "background: #dddddd; color: #0044ff");
 }
 
-export function apdebuglog(message) {
+export function apDebugLog(message) {
     console.log("%c[AP] " + message, "color: #8d07b6");
 }
 
@@ -178,19 +184,21 @@ export function apdebuglog(message) {
  * @param {boolean} condition
  * @param {string} message
  */
-export function apassert(condition, message) {
-    if (!condition) apthrow(message, new Error(message), true);
+export function apAssert(condition, message) {
+    if (!condition) {
+        apThrow(message, new Error(message), true);
+    }
 }
 
 /**
  * @param {string} title
  * @param {() => any} code
  */
-export function aptry(title, code) {
+export function apTry(title, code) {
     try {
         return code();
     } catch (error) {
-        apthrow(title, error, false);
+        apThrow(title, error, false);
     }
 }
 
@@ -199,11 +207,11 @@ export function aptry(title, code) {
  * @param {Error} error
  * @param {boolean} shouldThrowCompletely
  */
-function apthrow(message, error, shouldThrowCompletely) {
-    const text = (
-        message + "<br />---<br />" + 
-        error.stack.replaceAll("<", "").replaceAll(">", "").replaceAll("    at ", "<br />- at ")
-    );
+function apThrow(message, error, shouldThrowCompletely) {
+    const text =
+        message +
+        "<br />---<br />" +
+        error.stack.replaceAll("<", "").replaceAll(">", "").replaceAll("    at ", "<br />- at ");
     if (document.body.getElementsByClassName("gameLoadingOverlay").length) {
         const gameLoadingOverlay = document.body.getElementsByClassName("gameLoadingOverlay").item(0);
         const prefab_GameHint = gameLoadingOverlay.getElementsByClassName("prefab_GameHint").item(0);
@@ -211,16 +219,19 @@ function apthrow(message, error, shouldThrowCompletely) {
     } else {
         modImpl.dialogs.showInfo(shapez.T.mods.shapezipelago.infoBox.aptry.title, text);
     }
-    if (!shouldThrowCompletely) setTimeout(() => {
+    if (!shouldThrowCompletely) {
+        setTimeout(() => {
+            throw error;
+        });
+    } else {
         throw error;
-    });
-    else throw error;
+    }
 }
 
 /**
  * @type {Mod}
  */
-export var modImpl;
+export let modImpl;
 
 /**
  * @param {Mod} m
@@ -232,37 +243,36 @@ export function setModImpl(m) {
 /**
  * @type {Connection}
  */
-export var connection;
+export let connection;
 
 export class Connection {
-
     client = new Client();
     disconnectListener = null;
 
     /**
-     * @param {{hostname: string;port: number;game: string;name: string;items_handling: number;password: string;protocol?: "ws" | "wss";version?: {major: number;minor: number;build: number;};uuid?: string;tags?: string[];}} connectinfo
+     * @param {{hostname: string;port: number;game: string;name: string;items_handling: number;password: string;protocol?: "ws" | "wss";version?: {major: number;minor: number;build: number;};uuid?: string;tags?: string[];}} connectInfo
      * @param {{(packet: import("archipelago.js").ReceivedItemsPacket): void;(packet: import("archipelago.js").ReceivedItemsPacket): void;}} processItemsPacket
      * @returns {Promise}
      */
-    tryConnect(connectinfo, processItemsPacket) {
-        apdebuglog("Trying to connect to server");
+    tryConnect(connectInfo, processItemsPacket) {
+        apDebugLog("Trying to connect to server");
         // Phar (dev of the library) said the library already follows 0.5.0 protocol
-        connectinfo.version = {
+        connectInfo.version = {
             major: 0,
             minor: 5,
             build: 0,
         };
-        return this.client.connect(connectinfo)
+        return this.client
+            .connect(connectInfo)
             .then(() => {
-
-                apuserlog("Connected to the server");
+                apUserLog("Connected to the server");
                 connection = this;
                 this.reportStatusToServer(CLIENT_STATUS.CONNECTED);
-                this.connectionInformation = connectinfo;
+                this.connectionInformation = connectInfo;
 
                 this.client.addListener(SERVER_PACKET_TYPE.PRINT_JSON, (packet, message) => {
                     // @ts-ignore
-                    apuserlog((packet.slot != null ? this.client.players.name(packet.slot) + ": " : "") + message);
+                    apUserLog((packet.slot !== null ? this.client.players.name(packet.slot) + ": " : "") + message);
                 });
                 this.client.addListener(SERVER_PACKET_TYPE.RECEIVED_ITEMS, processItemsPacket);
                 this.disconnectListener = setInterval(() => {
@@ -275,125 +285,126 @@ export class Connection {
                         this.disconnectListener = null;
                     }
                 }, 5000);
-                
+
                 this.gamepackage = this.client.data.package.get("shapez");
 
                 const slotData = this.client.data.slotData;
-                var datacache = null;
 
                 // Earliest slotData version: 0.5.3
 
                 // Always string array, but javascript
-                datacache = slotData["shapesanity"].valueOf();
-                if (datacache instanceof Array) {
-                    this.shapesanityNames = datacache;
-                    apdebuglog(`Loaded slotData shapesanity (length=${datacache.length})`);
+                let dataCache = slotData["shapesanity"].valueOf();
+                if (dataCache instanceof Array) {
+                    this.shapesanityNames = dataCache;
+                    apDebugLog(`Loaded slotData shapesanity (length=${dataCache.length})`);
                 } else {
-                    apuserlog(`Error on loading shapesanity from slotData: class=${datacache.constructor.name}`);
-                    modImpl.dialogs.showInfo(shapez.T.mods.shapezipelago.infoBox.impossible.title, 
-                        `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${
-                            shapez.T.mods.shapezipelago.infoBox.impossible.shapesanitySlotData}`);
+                    apUserLog(`Error on loading shapesanity from slotData: class=${dataCache.constructor.name}`);
+                    modImpl.dialogs.showInfo(
+                        shapez.T.mods.shapezipelago.infoBox.impossible.title,
+                        `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${shapez.T.mods.shapezipelago.infoBox.impossible.shapesanitySlotData}`
+                    );
                 }
 
                 // Always string
                 this.goal = slotData["goal"].toString();
-                apdebuglog(`Loaded slotData goal=${this.goal}`);
+                apDebugLog(`Loaded slotData goal=${this.goal}`);
 
                 // Always integer, equals location count (without goal)
                 this.levelsToGenerate = Number(slotData["maxlevel"]);
-                apdebuglog(`Loaded slotData maxlevel=${this.levelsToGenerate}`);
-                if (this.goal === "vanilla" || this.goal === "mam") this.levelsToGenerate++;
+                apDebugLog(`Loaded slotData maxlevel=${this.levelsToGenerate}`);
+                if (this.goal === "vanilla" || this.goal === "mam") {
+                    ++this.levelsToGenerate;
+                }
 
                 // Always integer
                 this.tiersToGenerate = Number(slotData["finaltier"]);
-                apdebuglog(`Loaded slotData finaltier=${this.tiersToGenerate}`);
+                apDebugLog(`Loaded slotData finaltier=${this.tiersToGenerate}`);
 
                 this.slotId = this.client.data.slot;
-                apdebuglog(`Loaded slotId=${this.slotId}`);
+                apDebugLog(`Loaded slotId=${this.slotId}`);
 
                 this.randomStepsLength = new Array(5);
-                for (var phasenumber = 0; phasenumber < 5; phasenumber++) {
+                for (let phaseNumber = 0; phaseNumber < 5; ++phaseNumber) {
                     // Always integer
-                    this.randomStepsLength[phasenumber] = Number(slotData[`Phase ${phasenumber} length`]);
-                    apdebuglog(`Loaded slotData randomStepsLength[${phasenumber}]: ${this.randomStepsLength[phasenumber]}`);
+                    this.randomStepsLength[phaseNumber] = Number(slotData[`Phase ${phaseNumber} length`]);
+                    apDebugLog(`Loaded slotData randomStepsLength[${phaseNumber}]: ${this.randomStepsLength[phaseNumber]}`);
                 }
 
-                for (var phasenumber = 1; phasenumber <= 5; phasenumber++) {
+                for (let phaseNumber = 1; phaseNumber <= 5; ++phaseNumber) {
                     // both always string
-                    this.positionOfLevelBuilding[slotData[`Level building ${phasenumber}`]] = phasenumber;
-                    this.positionOfUpgradeBuilding[slotData[`Upgrade building ${phasenumber}`]] = phasenumber;
+                    this.positionOfLevelBuilding[slotData[`Level building ${phaseNumber}`]] = phaseNumber;
+                    this.positionOfUpgradeBuilding[slotData[`Upgrade building ${phaseNumber}`]] = phaseNumber;
                 }
-                for (var buildingname in this.positionOfLevelBuilding) {
-                    apdebuglog(`Initialized phase number ${this.positionOfLevelBuilding[buildingname]} for level and ${
-                        this.positionOfUpgradeBuilding[buildingname]} for upgrade building ${buildingname}`);
+                for (const buildingName in this.positionOfLevelBuilding) {
+                    apDebugLog(`Initialized phase number ${this.positionOfLevelBuilding[buildingName]} for level and ${
+                        this.positionOfUpgradeBuilding[buildingName]} for upgrade building ${buildingName}`);
                 }
 
                 // Always integer
                 this.throughputLevelsRatio = Number(slotData["throughput_levels_ratio"]);
-                apdebuglog(`Loaded slotData throughput_levels_ratio=${this.throughputLevelsRatio}`);
+                apDebugLog(`Loaded slotData throughput_levels_ratio=${this.throughputLevelsRatio}`);
 
                 // Always string
                 this.levelsLogic = slotData["randomize_level_logic"].toString();
-                apdebuglog(`Loaded slotData randomize_level_logic=${this.levelsLogic}`);
+                apDebugLog(`Loaded slotData randomize_level_logic=${this.levelsLogic}`);
 
                 // Always string
                 this.upgradesLogic = slotData["randomize_upgrade_logic"].toString();
-                apdebuglog(`Loaded slotData randomize_upgrade_logic=${this.upgradesLogic}`);
+                apDebugLog(`Loaded slotData randomize_upgrade_logic=${this.upgradesLogic}`);
 
                 // Always integer
                 this.clientSeed = Number(slotData["seed"]);
-                apdebuglog(`Loaded slotData seed=${this.clientSeed}`);
+                apDebugLog(`Loaded slotData seed=${this.clientSeed}`);
 
                 // Always integer
                 this.requiredShapesMultiplier = Number(slotData["required_shapes_multiplier"]);
-                apdebuglog(`Loaded slotData required_shapes_multiplier=${this.requiredShapesMultiplier}`);
+                apDebugLog(`Loaded slotData required_shapes_multiplier=${this.requiredShapesMultiplier}`);
 
                 // Always boolean
-                this.israndomizedLevels = Boolean(slotData["randomize_level_requirements"]);
-                apdebuglog(`Loaded slotData randomize_level_requirements=${this.israndomizedLevels}`);
+                this.isRandomizedLevels = Boolean(slotData["randomize_level_requirements"]);
+                apDebugLog(`Loaded slotData randomize_level_requirements=${this.isRandomizedLevels}`);
 
                 // Always boolean
                 this.isRandomizedUpgrades = Boolean(slotData["randomize_upgrade_requirements"]);
-                apdebuglog(`Loaded slotData randomize_upgrade_requirements=${this.isRandomizedUpgrades}`);
+                apDebugLog(`Loaded slotData randomize_upgrade_requirements=${this.isRandomizedUpgrades}`);
 
-                for (var cat of ["belt", "miner", "processors", "painting"]) {
+                for (const cat of ["belt", "miner", "processors", "painting"]) {
                     // Always number
                     this.categoryRandomBuildingsAmounts[cat] = Number(slotData[`${cat} category buildings amount`]);
-                    apdebuglog(`Loaded slotData "${cat} category buildings amount"=${this.categoryRandomBuildingsAmounts[cat]}`);
+                    apDebugLog(`Loaded slotData "${cat} category buildings amount"=${this.categoryRandomBuildingsAmounts[cat]}`);
                 }
 
                 // Always boolean
                 this.isSameLate = Boolean(slotData["same_late_upgrade_requirements"]);
-                apdebuglog(`Loaded slotData same_late_upgrade_requirements=${this.isSameLate}`);
+                apDebugLog(`Loaded slotData same_late_upgrade_requirements=${this.isSameLate}`);
 
                 // undefined until 0.5.5, boolean since 0.5.6
                 // Boolean(undefined) => false
                 this.isFloatingLayersAllowed = Boolean(slotData["allow_floating_layers"]);
-                apdebuglog(`Loaded slotData allow_floating_layers=${slotData["allow_floating_layers"]}`);
+                apDebugLog(`Loaded slotData allow_floating_layers=${slotData["allow_floating_layers"]}`);
 
                 // undefined until 0.5.10, float since 0.5.11
-                datacache = slotData["complexity_growth_gradient"];
-                this.complexityGrowthGradient = datacache == null ? 0.5 : Number(datacache);
-                apdebuglog(`Loaded slotData complexity_growth_gradient=${slotData["complexity_growth_gradient"]}`);
+                dataCache = slotData["complexity_growth_gradient"];
+                this.complexityGrowthGradient = dataCache === null ? 0.5 : Number(dataCache);
+                apDebugLog(`Loaded slotData complexity_growth_gradient=${slotData["complexity_growth_gradient"]}`);
 
                 // undefined until at least 0.5.13, string since TBA
-                datacache = slotData["unlock_variant"];
-                this.unlockVariant = datacache == null ? "individual" : String(datacache);
-                apdebuglog(`Loaded slotData unlock_variant=${slotData["unlock_variant"]}`);
+                dataCache = slotData["unlock_variant"];
+                this.unlockVariant = dataCache === null ? "individual" : String(dataCache);
+                apDebugLog(`Loaded slotData unlock_variant=${slotData["unlock_variant"]}`);
 
                 // undefined until 0.5.13, boolean since TBA
                 // Boolean(undefined) => false
                 this.isToolbarShuffled = Boolean(slotData["toolbar_shuffling"]);
-                apdebuglog(`Loaded slotData toolbar_shuffling=${slotData["toolbar_shuffling"]}`);
-
+                apDebugLog(`Loaded slotData toolbar_shuffling=${slotData["toolbar_shuffling"]}`);
             })
-            .catch((error) => {
-                apuserlog("Failed to connect: " + error.name + ", " + error.message);
+            .catch(error => {
+                apUserLog("Failed to connect: " + error.name + ", " + error.message);
             });
     }
 
     disconnect() {
-        apuserlog("Disconnecting from the server");
+        apUserLog("Disconnecting from the server");
         if (this.disconnectListener) {
             window.clearInterval(this.disconnectListener);
             this.disconnectListener = null;
@@ -415,13 +426,13 @@ export class Connection {
      */
     tiersToGenerate;
     /**
-     * @type {number} 
+     * @type {number}
      */
     requiredShapesMultiplier;
     /**
      * @type {boolean}
      */
-    israndomizedLevels;
+    isRandomizedLevels;
     /**
      * @type {boolean}
      */
@@ -447,14 +458,14 @@ export class Connection {
         "Rotator": 0,
         "Stacker": 0,
         "Painter": 0,
-        "Color Mixer": 0
+        "Color Mixer": 0,
     };
     positionOfUpgradeBuilding = {
         "Cutter": 0,
         "Rotator": 0,
         "Stacker": 0,
         "Painter": 0,
-        "Color Mixer": 0
+        "Color Mixer": 0,
     };
     /**
      * @type {number[]}
@@ -464,7 +475,7 @@ export class Connection {
         belt: 0,
         miner: 0,
         processors: 0,
-        painting: 0
+        painting: 0,
     };
     /**
      * @type {number}
@@ -511,19 +522,19 @@ export class Connection {
     isToolbarShuffled;
 
     /**
-     * 
      * @returns {String[]}
      */
     getCheckedLocationNames() {
-        var names = [];
+        const names = [];
         const checkedList = this.client.locations.checked;
-        for (var checkedId of checkedList)
+        for (const checkedId of checkedList) {
             names.push(this.client.locations.name(this.slotId, checkedId));
+        }
         return names;
     }
 
     requestItemPackage() {
-        this.client.send({cmd: CLIENT_PACKET_TYPE.SYNC});
+        this.client.send({ cmd: CLIENT_PACKET_TYPE.SYNC });
     }
 
     /**
@@ -537,7 +548,7 @@ export class Connection {
      * @param {number[]} locids
      */
     sendLocationChecks(locids) {
-        this.client.send({cmd: CLIENT_PACKET_TYPE.LOCATION_CHECKS, locations: locids});
+        this.client.send({ cmd: CLIENT_PACKET_TYPE.LOCATION_CHECKS, locations: locids });
     }
 
     /**
@@ -561,16 +572,14 @@ export class Connection {
     getLocationName(playerid, locid) {
         return connection.client.locations.name(playerid, locid);
     }
-
 }
 
 /**
  * @type {Ingame}
  */
-export var currentIngame;
+export let currentIngame;
 
 export class Ingame {
-
     /**
      * @type {GameRoot}
      */
@@ -597,7 +606,7 @@ export class Ingame {
         stacker: false,
         painter: false,
         mixer: false,
-        trash: false
+        trash: false,
     };
     trapThrottled = {
         belt: false,
@@ -608,7 +617,7 @@ export class Ingame {
         rotator: false,
         stacker: false,
         painter: false,
-        mixer: false
+        mixer: false,
     };
     trapMalfunction = {
         cutter: false,
@@ -618,7 +627,7 @@ export class Ingame {
         rotator_180: false,
         stacker: false,
         painter: false,
-        painter_quad: false
+        painter_quad: false,
     };
     /**
      * @type {{shape: string; required: number; reward: string; throughputOnly: boolean;}[]}
@@ -668,9 +677,9 @@ export class Ingame {
     connectionInformation;
 
     constructor() {
-        apdebuglog("Constructing Ingame object");
+        apDebugLog("Constructing Ingame object");
         currentIngame = this;
-        apdebuglog("Ingame object constructed");
+        apDebugLog("Ingame object constructed");
     }
 
     /**
@@ -678,12 +687,14 @@ export class Ingame {
      */
     afterRootInitialization(root) {
         this.root = root;
-        this.isAPSave = !(!connection);
+        this.isAPSave = !!connection;
     }
 
     leave() {
-        apdebuglog("Leaving and destroying Ingame object");
-        if (connection) connection.reportStatusToServer(CLIENT_STATUS.CONNECTED);
+        apDebugLog("Leaving and destroying Ingame object");
+        if (connection) {
+            connection.reportStatusToServer(CLIENT_STATUS.CONNECTED);
+        }
         this.clearEfficiency3Interval();
         currentIngame = null;
     }
@@ -693,7 +704,7 @@ export class Ingame {
      * @param {number} ms
      */
     startEfficiency3Interval(f, ms) {
-        apdebuglog("Starting efficiency3Interval");
+        apDebugLog("Starting efficiency3Interval");
         this.efficiency3Interval = setInterval(f, ms);
     }
 
@@ -703,5 +714,4 @@ export class Ingame {
             this.efficiency3Interval = null;
         }
     }
-
 }

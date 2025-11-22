@@ -28,21 +28,21 @@ import { HUDWireInfo } from "shapez/game/hud/parts/wire_info";
 import { HUDWiresOverlay } from "shapez/game/hud/parts/wires_overlay";
 import { HUDWiresToolbar } from "shapez/game/hud/parts/wires_toolbar";
 import { MetaBuilding } from "shapez/game/meta_building";
-import { RegularGameMode } from "shapez/game/modes/regular";
 
-var levelDefinitions = null;
-var upgrades = null;
+let levelDefinitions = null;
+let upgrades = null;
 
 export class APGameMode extends GameMode {
-    adjustZone(w, h) {
-        return;
-    }
+    adjustZone(w, h) {}
+
     static getId() {
         return "apMode";
     }
+
     static getType() {
         return enumGameModeTypes.default;
     }
+
     constructor(root) {
         super(root);
         this.additionalHudParts = {
@@ -84,21 +84,27 @@ export class APGameMode extends GameMode {
             MetaItemProducerBuilding,
         ];
     }
+
     get difficultyMultiplicator() {
         return 1;
     }
+
     getUpgrades() {
         return upgrades;
     }
+
     getLevelDefinitions() {
-        return levelDefinitions
+        return levelDefinitions;
     }
+
     getIsFreeplayAvailable() {
         return true;
     }
+
     hasAchievements() {
         return true;
     }
+
     setDefinitions(definitions, ups) {
         levelDefinitions = definitions;
         upgrades = ups;
