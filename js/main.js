@@ -1,5 +1,5 @@
 import { Mod } from "shapez/mods/mod";
-import { addInputContainer, addShapesanityBox } from "./ui_changes";
+import { addInputContainer } from "./ui_changes";
 import { registerSavingData } from "./savefile";
 import { connection, currentIngame, Ingame, setModImpl } from "./global_data";
 import { GameRoot } from "shapez/game/root";
@@ -10,6 +10,9 @@ import { checkLocation, resyncLocationChecks, shapesanityAnalyzer } from "./serv
 import { enumAnalyticsDataSource } from "shapez/game/production_analytics";
 import { globalConfig } from "shapez/core/config";
 import { apDebugLog, apTry } from "./utils";
+import { shapesanityExample } from "./shapesanity";
+import { CLIENT_STATUS } from "archipelago.js";
+import { HUDShapesanity } from "./hud/shapesanity";
 
 class ModImpl extends Mod {
     init() {
@@ -20,7 +23,7 @@ class ModImpl extends Mod {
             this.signals.gameInitialized.add(this.onGameInitialized);
             this.signals.gameStarted.add(this.onGameStarted);
             addInputContainer();
-            addShapesanityBox();
+            this.modInterface.registerHudElement("ingame_HUD_Shapesanity", HUDShapesanity);
             registerSavingData();
             addCommands();
             this.signals.gameInitialized.add((/** @type {GameRoot} */ root) => {
@@ -70,6 +73,27 @@ class ModImpl extends Mod {
                 }
             });
         });
+
+        apTry("Shapesanity button creation failed", () => {
+            apDebugLog("Creating shapesanity button");
+            const game_menu = currentIngame.root.hud.parts["gameMenu"];
+            const shapesanityButton = document.createElement("button");
+            shapesanityButton.classList.add("shapesanityButton");
+            game_menu.element.prepend(shapesanityButton);
+            game_menu.trackClicks(shapesanityButton, () =>
+                currentIngame.root.hud.parts["ingame_HUD_Shapesanity"].show()
+            );
+        });
+        connection.reportStatusToServer(CLIENT_STATUS.PLAYING);
+        currentIngame.scoutedShapesanity = new Array(connection.shapesanityNames.length).fill(false);
+        for (const name of connection.shapesanityNames) {
+            const hash = shapesanityExample(name);
+            currentIngame.shapesanityExamplesHash.push(hash);
+            currentIngame.shapesanityExamples.push(
+                root.shapeDefinitionMgr.getShapeFromShortKey(hash).generateAsCanvas(50)
+            );
+        }
+
         apTry("Requesting item package failed", () => connection.requestItemPackage());
         apTry("Resyncing locations failed", resyncLocationChecks);
         if (connection.goal === "efficiency_iii") {
