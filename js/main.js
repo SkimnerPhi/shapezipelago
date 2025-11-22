@@ -1,20 +1,22 @@
 import { Mod } from "shapez/mods/mod";
 import { addInputContainer, addShapesanityBox } from "./ui_changes";
 import { registerSavingData } from "./savefile";
-import { apDebugLog, apTry, connection, currentIngame, Ingame, setModImpl } from "./global_data";
+import { connection, currentIngame, Ingame, setModImpl } from "./global_data";
 import { GameRoot } from "shapez/game/root";
 import { addCommands } from "./console_commands";
-import { patchVanillaClasses } from "./patches/patches";
+import { patchEnums, patchVanillaClasses } from "./patches/patches";
 import { AchievementLocationProxy } from "./achievements";
 import { checkLocation, resyncLocationChecks, shapesanityAnalyzer } from "./server_communication";
 import { enumAnalyticsDataSource } from "shapez/game/production_analytics";
 import { globalConfig } from "shapez/core/config";
+import { apDebugLog, apTry } from "./utils";
 
 class ModImpl extends Mod {
     init() {
         apTry("Mod initialization failed", () => {
             setModImpl(this);
             patchVanillaClasses(this.modInterface);
+            patchEnums();
             this.signals.gameInitialized.add(this.onGameInitialized);
             this.signals.gameStarted.add(this.onGameStarted);
             addInputContainer();

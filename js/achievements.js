@@ -1,8 +1,14 @@
 import { GameRoot } from "shapez/game/root";
-import { AchievementCollection, AchievementProviderInterface } from "shapez/platform/achievement_provider";
-import { achievementNames, apDebugLog, connection } from "./global_data";
+import {
+    AchievementCollection,
+    AchievementProviderInterface,
+    ACHIEVEMENTS,
+} from "shapez/platform/achievement_provider";
+import { connection } from "./global_data";
 import { checkLocation } from "./server_communication";
 import { AchievementProxy } from "shapez/game/achievement_proxy";
+import { enumAchievementToAPLocations } from "./archipelago/ap_location";
+import { apDebugLog } from "./utils";
 
 export class AchievementLocationProxy extends AchievementProxy {
     /**
@@ -42,8 +48,8 @@ export class AchievementLocationProvider extends AchievementProviderInterface {
 
     activate(key) {
         if (connection) {
-            if (achievementNames[key]) {
-                checkLocation("Checked", false, achievementNames[key]);
+            if (ACHIEVEMENTS[key]) {
+                checkLocation("Checked", false, enumAchievementToAPLocations[key]);
             }
         }
         return Promise.resolve();

@@ -43,6 +43,7 @@ import { classPatch as hudShopPatch } from "./game/hud/parts/shop";
 import { classPatch as hudWiresOverlayPatch } from "./game/hud/parts/wires_overlay";
 import { classPatch as regularGameModePatch } from "./game/modes/regular";
 import { classPatch as inGameStatePatch } from "./states/ingame";
+import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 
 export function patchVanillaClasses(modInterface) {
     // game/
@@ -76,4 +77,18 @@ export function patchVanillaClasses(modInterface) {
 
     // states/
     modInterface.extendClass(InGameState, inGameStatePatch);
+}
+
+export function patchEnums() {
+    Object.assign(enumHubGoalRewards, {
+        reward_belt: "reward_belt",
+        reward_extractor: "reward_extractor",
+        reward_cutter: "reward_cutter",
+        reward_wires: "reward_wires",
+        reward_lever: "reward_lever",
+        reward_trash: "reward_trash",
+        reward_painter_quad: "reward_painter_quad",
+        reward_ap: "reward_ap",
+        reward_easter_egg: "reward_easter_egg",
+    });
 }

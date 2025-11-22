@@ -1,4 +1,4 @@
-import { connection, currentIngame, customRewards } from "../../../global_data";
+import { connection, currentIngame } from "../../../global_data";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { defaultBuildingVariant } from "shapez/game/meta_building";
 import { enumCutterVariants } from "shapez/game/buildings/cutter";
@@ -22,7 +22,7 @@ export function classPatch({ $old }) {
             }
 
             return (
-                root.hubGoals.isRewardUnlocked(customRewards.cutter) ||
+                root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_cutter) ||
                 root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_cutter_quad)
             );
         },
@@ -32,7 +32,7 @@ export function classPatch({ $old }) {
             }
 
             const variants = [];
-            if (root.hubGoals.isRewardUnlocked(customRewards.cutter)) {
+            if (root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_cutter)) {
                 variants.push(defaultBuildingVariant);
             }
             if (root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_cutter_quad)) {

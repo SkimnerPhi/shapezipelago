@@ -1,13 +1,8 @@
 import { RandomNumberGenerator } from "shapez/core/rng";
-import {
-    apDebugLog,
-    baseBuildingNames,
-    connection,
-    currentIngame,
-    customRewards,
-    modImpl,
-} from "./global_data";
+import { baseBuildingNames, connection, currentIngame, modImpl } from "./global_data";
 import { ShapeDefinition } from "shapez/game/shape_definition";
+import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
+import { apDebugLog } from "./utils";
 
 export const enumVanillaShapes = [
     { shape: "CuCuCuCu", required: 30 },
@@ -29,7 +24,7 @@ export const enumVanillaShapes = [
     { shape: "CbRbRbCb:CwCwCwCw:WbWbWbWb", required: 20000 },
     { shape: "Sg----Sg:CgCgCgCg:--CyCy--", required: 20000 },
     { shape: "CpRpCp--:SwSwSwSw", required: 25000 },
-    { shape: "RuCw--Cw:----Ru--", required: 25000, reward: customRewards.easter_egg },
+    { shape: "RuCw--Cw:----Ru--", required: 25000, reward: enumHubGoalRewards.reward_easter_egg },
     { shape: "CrCwCrCw:CwCrCwCr:CrCwCrCw:CwCrCwCr", required: 25000 },
     { shape: "Cg----Cr:Cw----Cw:Sy------:Cy----Cy", required: 25000 },
     { shape: "CcSyCcSy:SyCcSyCc:CcSyCcSy", required: 25000 },
@@ -42,7 +37,7 @@ export const enumVanillaShapes = [
     const multiplier = connection.requiredShapesMultiplier;
     for (const level of enumVanillaShapes) {
         level.required = Math.ceil((level.required * multiplier) / 10);
-        level.reward ??= customRewards.ap;
+        level.reward ??= enumHubGoalRewards.reward_ap;
         level.throughputOnly ??= false;
     }
 }
@@ -61,7 +56,7 @@ export function randomizedVanillaStepsShapes(randomizer) {
     levelsDefs.push({
         shape: calcRandomShape(randomizer, 0, false, false, false, false, false),
         required: throughputOnly ? getThroughputByLevel(1) : getAmountByLevel(1),
-        reward: customRewards.ap,
+        reward: enumHubGoalRewards.reward_ap,
         throughputOnly,
     });
 
@@ -83,7 +78,7 @@ export function randomizedVanillaStepsShapes(randomizer) {
                 phase[baseBuildingNames.mixer] === 1
             ),
             required: throughputOnly ? getThroughputByLevel(level) : getAmountByLevel(level),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly,
         });
     }
@@ -97,7 +92,7 @@ export function randomizedVanillaStepsShapes(randomizer) {
         levelsDefs.push({
             shape: calcRandomShape(randomizer, getGrowingComplexity(5, index), true, true, true, true, true),
             required: throughputOnly ? getThroughputByLevel(level) : getAmountByLevel(level),
-            reward: level === 20 ? customRewards.easter_egg : customRewards.ap,
+            reward: level === 20 ? enumHubGoalRewards.reward_easter_egg : enumHubGoalRewards.reward_ap,
             throughputOnly,
         });
     }
@@ -117,7 +112,7 @@ export function randomizedVanillaStepsShapes(randomizer) {
                 true
             ),
             required: throughputOnly ? getThroughputByLevel(27) : getAmountByLevel(27),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly,
         });
     }
@@ -135,7 +130,7 @@ export function randomizedStretchedShapes(randomizer) {
         levelsDefs.push({
             shape: calcRandomShape(randomizer, getGrowingComplexity(0, i), false, false, false, false, false),
             required: getAmountByLevel(i + 1),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputRatio,
         });
     }
@@ -151,7 +146,7 @@ export function randomizedStretchedShapes(randomizer) {
                 phase[baseBuildingNames.mixer] === 1
             ),
             required: getAmountByLevel(i + 1),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputRatio,
         });
     }
@@ -167,7 +162,7 @@ export function randomizedStretchedShapes(randomizer) {
                 phase[baseBuildingNames.mixer] <= 2
             ),
             required: getAmountByLevel(i + 1),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputRatio,
         });
     }
@@ -183,7 +178,7 @@ export function randomizedStretchedShapes(randomizer) {
                 phase[baseBuildingNames.mixer] <= 3
             ),
             required: getAmountByLevel(i + 1),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputRatio,
         });
     }
@@ -199,7 +194,7 @@ export function randomizedStretchedShapes(randomizer) {
                 phase[baseBuildingNames.mixer] <= 4
             ),
             required: getAmountByLevel(i + 1),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputRatio,
         });
     }
@@ -215,7 +210,7 @@ export function randomizedStretchedShapes(randomizer) {
                 true
             ),
             required: getAmountByLevel(ii),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputRatio,
         });
     }
@@ -241,7 +236,7 @@ export function randomizedQuickShapes(randomizer) {
     levelsdefs[0] = {
         shape: calcRandomShape(randomizer, 0, false, false, false, false, false),
         required: getAmountByLevel(1),
-        reward: customRewards.ap,
+        reward: enumHubGoalRewards.reward_ap,
         throughputOnly: randomizer.nextIntRange(0, 100) < throughputratio,
     };
     for (let i_phases = 1; i_phases <= 4; ++i_phases) {
@@ -256,7 +251,7 @@ export function randomizedQuickShapes(randomizer) {
                 phase[baseBuildingNames.mixer] <= i_phases
             ),
             required: getAmountByLevel(i_phases + 1),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputratio,
         };
     }
@@ -264,19 +259,19 @@ export function randomizedQuickShapes(randomizer) {
         levelsdefs[i - 1] = {
             shape: calcRandomShape(randomizer, getGrowingComplexity(5, i - 6), true, true, true, true, true),
             required: getAmountByLevel(i),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputratio,
         };
     }
     if (throughputratio === -1) {
         levelsdefs[13].throughputOnly = true;
     }
-    levelsdefs[19].reward = customRewards.easter_egg;
+    levelsdefs[19].reward = enumHubGoalRewards.reward_easter_egg;
     for (let i = 27; i <= levelstogenerate; ++i) {
         levelsdefs.push({
             shape: calcRandomShape(randomizer, getGrowingComplexity(5, i - 6), true, true, true, true, true),
             required: getThroughputByLevel(i),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputratio || throughputratio === -1,
         });
     }
@@ -302,7 +297,7 @@ export function randomizedRandomStepsShapes(randomizer) {
         {
             shape: calcRandomShape(randomizer, 0, false, false, false, false, false),
             required: getAmountByLevel(1),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputratio,
         },
     ];
@@ -319,7 +314,7 @@ export function randomizedRandomStepsShapes(randomizer) {
                     phase[baseBuildingNames.mixer] <= i_phases
                 ),
                 required: getAmountByLevel(levelsdefs.length + 1),
-                reward: customRewards.ap,
+                reward: enumHubGoalRewards.reward_ap,
                 throughputOnly: randomizer.nextIntRange(0, 100) < throughputratio,
             });
         }
@@ -337,7 +332,7 @@ export function randomizedRandomStepsShapes(randomizer) {
                 true
             ),
             required: getAmountByLevel(ii),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputratio,
         });
     }
@@ -363,7 +358,7 @@ export function randomizedHardcoreDopamineShapes(randomizer, buildingsCount) {
         {
             shape: calcRandomShape(randomizer, 0, false, false, false, false, false),
             required: getAmountByLevel(1),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputratio,
         },
     ];
@@ -380,7 +375,7 @@ export function randomizedHardcoreDopamineShapes(randomizer, buildingsCount) {
                 phase[baseBuildingNames.mixer] <= buildingsCount
             ),
             required: getAmountByLevel(i),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputratio,
         });
     }
@@ -396,7 +391,7 @@ export function randomizedHardcoreDopamineShapes(randomizer, buildingsCount) {
                 true
             ),
             required: getAmountByLevel(levelstogenerate),
-            reward: customRewards.ap,
+            reward: enumHubGoalRewards.reward_ap,
             throughputOnly: randomizer.nextIntRange(0, 100) < throughputratio,
         });
     }

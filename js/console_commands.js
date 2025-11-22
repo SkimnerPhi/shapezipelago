@@ -1,5 +1,6 @@
-import { apDebugLog, apTry, connection, currentIngame, modImpl } from "./global_data";
+import { connection, currentIngame, modImpl } from "./global_data";
 import { checkLocation, receiveItemFunctions } from "./server_communication";
+import { apDebugLog, apTry } from "./utils";
 
 export function addCommands() {
     apDebugLog("Calling addCommands");

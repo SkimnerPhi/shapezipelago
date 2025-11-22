@@ -9,97 +9,7 @@ import { Signal } from "shapez/core/signal";
 import { GameRoot } from "shapez/game/root";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { Mod } from "shapez/mods/mod";
-
-export const methodNames = {
-    metaBuildings: {
-        getAvailableVariants: "getAvailableVariants",
-        getIsUnlocked: "getIsUnlocked",
-        getAdditionalStatistics: "getAdditionalStatistics",
-    },
-};
-
-export const customRewards = {
-    belt: "reward_belt",
-    extractor: "reward_extractor",
-    cutter: "reward_cutter",
-    wires: "reward_wires",
-    switch: "reward_switch",
-    trash: "reward_trash",
-    painter_quad: "reward_painter_quad",
-    ap: "reward_ap",
-    easter_egg: "reward_easter_egg",
-};
-
-export const upgradeIdNames = {
-    belt: "Belt",
-    miner: "Miner",
-    processors: "Processors",
-    painting: "Painting",
-};
-
-export const achievementNames = {
-    "belt500Tiles": "I need trains",
-    "blueprint100k": "It's piling up",
-    "blueprint1m": "I'll use it later",
-    "completeLvl26": "Freedom",
-    "cutShape": "Cutter",
-    "destroy1000": "Perfectionist",
-    "irrelevantShape": "Oops",
-    "level100": "Is this the end?",
-    "level50": "Can't stop",
-    "logoBefore18": "A bit early?",
-    "mam": "MAM (Make Anything Machine)",
-    "mapMarkers15": "GPS",
-    "oldLevel17": "Memories from the past",
-    "openWires": "The next dimension",
-    "paintShape": "Painter",
-    "place5000Wires": "Computer Guy",
-    "placeBlueprint": "Now it's easy",
-    "placeBp1000": "Copy-Pasta",
-    "play1h": "Getting into it",
-    "produceLogo": "The logo!",
-    "produceMsLogo": "I've seen that before ...",
-    "produceRocket": "To the moon",
-    "rotateShape": "Rotater",
-    "stack4Layers": "Stack overflow",
-    "stackShape": "Wait, they stack?",
-    "store100Unique": "It's a mess",
-    "storeShape": "Storage",
-    "throughputBp25": "Efficiency 1",
-    "throughputBp50": "Efficiency 2",
-    "throughputLogo25": "Branding specialist 1",
-    "throughputLogo50": "Branding specialist 2",
-    "throughputRocket10": "Preparing to launch",
-    "throughputRocket20": "SpaceY",
-    "trash1000": "Get rid of them",
-    "unlockWires": "Wires",
-    "upgradesTier5": "Faster",
-    "upgradesTier8": "Even faster",
-    "darkMode": "My eyes no longer hurt",
-    "speedrunBp30": "Speedrun Master",
-    "speedrunBp60": "Speedrun Novice",
-    "speedrunBp120": "Not an idle game",
-    "noBeltUpgradesUntilBp": "It's so slow",
-    "noInverseRotater": "King of Inefficiency",
-    "play10h": "It's been a long time",
-    "play20h": "Addicted",
-};
-
-const translate = [
-    { key: 1000, val: "M" },
-    { key: 900, val: "CM" },
-    { key: 500, val: "D" },
-    { key: 400, val: "CD" },
-    { key: 100, val: "C" },
-    { key: 90, val: "XC" },
-    { key: 50, val: "L" },
-    { key: 40, val: "XL" },
-    { key: 10, val: "X" },
-    { key: 9, val: "IX" },
-    { key: 5, val: "V" },
-    { key: 4, val: "IV" },
-    { key: 1, val: "I" },
-];
+import { apDebugLog, apUserLog } from "./utils";
 
 export const baseBuildingNames = {
     belt: "Belt",
@@ -138,95 +48,35 @@ export const colorNames = {
     uncolored: "Uncolored",
 };
 
-export const getIsUnlockedForTrap = {
-    belt: (root) => root.hubGoals.isRewardUnlocked(customRewards.belt) && !currentIngame.trapLocked.belt,
-    balancer: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_balancer) && !currentIngame.trapLocked.balancer,
-    tunnel: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_tunnel) && !currentIngame.trapLocked.tunnel,
-    extractor: (root) => root.hubGoals.isRewardUnlocked(customRewards.extractor) && !currentIngame.trapLocked.extractor,
-    cutter: (root) => root.hubGoals.isRewardUnlocked(customRewards.cutter) && !currentIngame.trapLocked.cutter,
-    cutter_quad: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_cutter_quad) && !currentIngame.trapLocked.cutter,
-    rotator: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater) && !currentIngame.trapLocked.rotator,
-    rotator_ccw: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater_ccw) && !currentIngame.trapLocked.rotator,
-    rotator_180: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_rotater_180) && !currentIngame.trapLocked.rotator,
-    stacker: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_stacker) && !currentIngame.trapLocked.stacker,
-    painter: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_painter) && !currentIngame.trapLocked.painter,
-    painter_quad: (root) => root.hubGoals.isRewardUnlocked(customRewards.painter_quad) && !currentIngame.trapLocked.painter,
-    mixer: (root) => root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_mixer) && !currentIngame.trapLocked.mixer,
-    trash: (root) => root.hubGoals.isRewardUnlocked(customRewards.trash) && !currentIngame.trapLocked.trash,
+export const enumTraps = {
+    belt: "belt",
+    balancer: "balancer",
+    tunnel: "tunnel",
+    extractor: "extractor",
+    cutter: "cutter",
+    cutter_quad: "cutter_quad",
+    rotator: "rotator",
+    stacker: "stacker",
+    painter: "painter",
+    painter_quad: "painter_quad",
+    mixer: "mixer",
+    trash: "trash",
 };
 
-/**
- * @param {number} number
- */
-export function roman(number) {
-    let rom = "";
-    for (let i = 0; i < translate.length; ++i) {
-        while (number >= translate[i].key) {
-            rom = rom + translate[i].val;
-            number = number - translate[i].key;
-        }
-    }
-    return rom;
-}
-
-/**
- * @param {string} message
- */
-export function apUserLog(message) {
-    console.log("%c[AP] " + message, "background: #dddddd; color: #0044ff");
-}
-
-export function apDebugLog(message) {
-    console.log("%c[AP] " + message, "color: #8d07b6");
-}
-
-/**
- * @param {boolean} condition
- * @param {string} message
- */
-export function apAssert(condition, message) {
-    if (!condition) {
-        apThrow(message, new Error(message), true);
-    }
-}
-
-/**
- * @param {string} title
- * @param {() => any} code
- */
-export function apTry(title, code) {
-    try {
-        return code();
-    } catch (error) {
-        apThrow(title, error, false);
-    }
-}
-
-/**
- * @param {string} message
- * @param {Error} error
- * @param {boolean} shouldThrowCompletely
- */
-function apThrow(message, error, shouldThrowCompletely) {
-    const text =
-        message +
-        "<br />---<br />" +
-        error.stack.replaceAll("<", "").replaceAll(">", "").replaceAll("    at ", "<br />- at ");
-    if (document.body.getElementsByClassName("gameLoadingOverlay").length) {
-        const gameLoadingOverlay = document.body.getElementsByClassName("gameLoadingOverlay").item(0);
-        const prefab_GameHint = gameLoadingOverlay.getElementsByClassName("prefab_GameHint").item(0);
-        prefab_GameHint.innerHTML = ("ERROR " + shapez.T.mods.shapezipelago.infoBox.aptry.title + "<br />" + text);
-    } else {
-        modImpl.dialogs.showInfo(shapez.T.mods.shapezipelago.infoBox.aptry.title, text);
-    }
-    if (!shouldThrowCompletely) {
-        setTimeout(() => {
-            throw error;
-        });
-    } else {
-        throw error;
-    }
-}
+export const enumTrapToHubGoalRewards = {
+    [enumTraps.belt]: enumHubGoalRewards.reward_belt,
+    [enumTraps.balancer]: enumHubGoalRewards.reward_balancer,
+    [enumTraps.tunnel]: enumHubGoalRewards.reward_tunnel,
+    [enumTraps.extractor]: enumHubGoalRewards.reward_extractor,
+    [enumTraps.cutter]: enumHubGoalRewards.reward_cutter,
+    [enumTraps.cutter_quad]: enumHubGoalRewards.reward_cutter,
+    [enumTraps.rotator]: enumHubGoalRewards.reward_rotater,
+    [enumTraps.stacker]: enumHubGoalRewards.reward_stacker,
+    [enumTraps.painter]: enumHubGoalRewards.reward_painter,
+    [enumTraps.painter_quad]: enumHubGoalRewards.reward_painter_quad,
+    [enumTraps.mixer]: enumHubGoalRewards.reward_mixer,
+    [enumTraps.trash]: enumHubGoalRewards.reward_trash,
+};
 
 /**
  * @type {Mod}
@@ -597,37 +447,37 @@ export class Ingame {
      */
     efficiency3Interval;
     trapLocked = {
-        belt: false,
-        balancer: false,
-        tunnel: false,
-        extractor: false,
-        cutter: false,
-        rotator: false,
-        stacker: false,
-        painter: false,
-        mixer: false,
-        trash: false,
+        [enumTraps.belt]: false,
+        [enumTraps.balancer]: false,
+        [enumTraps.tunnel]: false,
+        [enumTraps.extractor]: false,
+        [enumTraps.cutter]: false,
+        [enumTraps.rotator]: false,
+        [enumTraps.stacker]: false,
+        [enumTraps.painter]: false,
+        [enumTraps.mixer]: false,
+        [enumTraps.trash]: false,
     };
     trapThrottled = {
-        belt: false,
-        balancer: false,
-        tunnel: false,
-        extractor: false,
-        cutter: false,
-        rotator: false,
-        stacker: false,
-        painter: false,
-        mixer: false,
+        [enumTraps.belt]: false,
+        [enumTraps.balancer]: false,
+        [enumTraps.tunnel]: false,
+        [enumTraps.extractor]: false,
+        [enumTraps.cutter]: false,
+        [enumTraps.rotator]: false,
+        [enumTraps.stacker]: false,
+        [enumTraps.painter]: false,
+        [enumTraps.mixer]: false,
     };
     trapMalfunction = {
-        cutter: false,
-        cutter_quad: false,
-        rotator: false,
-        rotator_ccw: false,
-        rotator_180: false,
-        stacker: false,
-        painter: false,
-        painter_quad: false,
+        [enumTraps.cutter]: false,
+        [enumTraps.cutter_quad]: false,
+        [enumTraps.rotator]: false,
+        [enumTraps.rotator_ccw]: false,
+        [enumTraps.rotator_180]: false,
+        [enumTraps.stacker]: false,
+        [enumTraps.painter]: false,
+        [enumTraps.painter_quad]: false,
     };
     /**
      * @type {{shape: string; required: number; reward: string; throughputOnly: boolean;}[]}

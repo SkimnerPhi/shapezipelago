@@ -3,7 +3,6 @@ import { MetaHubBuilding } from "shapez/game/buildings/hub";
 import { enumMinerVariants, MetaMinerBuilding } from "shapez/game/buildings/miner";
 import { getBuildingDataFromCode } from "shapez/game/building_codes";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
-import { customRewards } from "../../../../global_data";
 
 export function classPatch({ $old }) {
     return {
@@ -25,7 +24,7 @@ export function classPatch({ $old }) {
                     this.root.app.settings.getAllSettings().pickMinerOnPatch &&
                     this.root.currentLayer === "regular" &&
                     this.root.gameMode.hasResources() &&
-                    (this.root.hubGoals.isRewardUnlocked(customRewards.extractor) ||
+                    (this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_extractor) ||
                         this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_miner_chainable))
                 ) {
                     this.currentMetaBuilding.set(gMetaBuildingRegistry.findByClass(MetaMinerBuilding));

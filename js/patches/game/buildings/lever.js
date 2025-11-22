@@ -1,4 +1,5 @@
-import { connection, customRewards } from "../../../global_data";
+import { connection } from "../../../global_data";
+import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 
 export function classPatch({ $old }) {
     return {
@@ -7,7 +8,7 @@ export function classPatch({ $old }) {
                 return $old.getIsUnlocked(root);
             }
 
-            return root.hubGoals.isRewardUnlocked(customRewards.switch);
+            return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_lever);
         },
     };
 }

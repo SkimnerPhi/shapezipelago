@@ -1,12 +1,4 @@
-import {
-    achievementNames,
-    apDebugLog,
-    apTry,
-    Connection,
-    connection,
-    currentIngame,
-    modImpl,
-} from "./global_data";
+import { Connection, connection, currentIngame, modImpl } from "./global_data";
 import { CLIENT_STATUS, ITEMS_HANDLING_FLAGS } from "archipelago.js";
 import { processItemsPacket } from "./server_communication";
 import { makeButton, makeDiv, removeAllChildren } from "shapez/core/utils";
@@ -15,6 +7,10 @@ import { DynamicDomAttach } from "shapez/game/hud/dynamic_dom_attach";
 import { InputReceiver } from "shapez/core/input_receiver";
 import { KeyActionMapper, KEYMAPPINGS } from "shapez/game/key_action_mapper";
 import { ClickDetector } from "shapez/core/click_detector";
+import { ACHIEVEMENTS } from "shapez/platform/achievement_provider";
+import { enumAchievementToAPLocations } from "./archipelago/ap_location";
+import { T } from "shapez/translations";
+import { apDebugLog, apTry } from "./utils";
 
 export function addInputContainer() {
     apDebugLog("Calling addInputContainer");
@@ -332,9 +328,10 @@ class HUDShapesanity extends BaseHUDPart {
             this.dialogInner.setAttribute("currentTab", "achievements");
             if (this.visible) {
                 if (this.achievementsIncluded) {
-                    for (const achievementId in achievementNames) {
+                    for (const achievement in ACHIEVEMENTS) {
                         let availability = 0;
-                        const id = connection.gamepackage.location_name_to_id[achievementNames[achievementId]];
+                        const location = enumAchievementToAPLocations[achievement];
+                        const id = connection.gamepackage.location_name_to_id[location];
                         if (connection.client.locations.missing.includes(id)) {
                             availability = 1;
                         }
@@ -346,7 +343,7 @@ class HUDShapesanity extends BaseHUDPart {
                             const divElem = makeDiv(this.contentDiv, null, ["shapesanityRow"]);
                             const nextName = document.createElement("span");
                             nextName.classList.add("achievementName");
-                            nextName.innerText = achievementNames[achievementId];
+                            nextName.innerText = T.achievements[achievement];
                             if (availability === 2) {
                                 divElem.classList.add("locationChecked");
                             }
@@ -420,7 +417,7 @@ class HUDShapesanity extends BaseHUDPart {
             }
             this.update();
             this.setTabShapesanity();
-            const exampleId = connection.gamepackage.location_name_to_id[achievementNames.cutShape];
+            const exampleId = connection.gamepackage.location_name_to_id[ACHIEVEMENTS.cutShape];
             this.achievementsIncluded =
                 connection.client.locations.missing.includes(exampleId) ||
                 connection.client.locations.checked.includes(exampleId);

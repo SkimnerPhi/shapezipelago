@@ -1,4 +1,4 @@
-import { connection, currentIngame, customRewards } from "../../../global_data";
+import { connection, currentIngame } from "../../../global_data";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { defaultBuildingVariant } from "shapez/game/meta_building";
 import { enumBalancerVariants } from "shapez/game/buildings/balancer";
@@ -15,8 +15,8 @@ export function classPatch({ $old }) {
 
             return (
                 $old.getIsUnlocked(root) ||
-                root.hubGoals.isRewardUnlocked(customRewards.reward_merger) ||
-                root.hubGoals.isRewardUnlocked(customRewards.reward_splitter)
+                root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_reward_merger) ||
+                root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_reward_splitter)
             );
         },
         getAvailableVariants(root) {

@@ -1,6 +1,8 @@
-import { apTry, connection, currentIngame, roman, upgradeIdNames } from "../../global_data";
+import { connection, currentIngame } from "../../global_data";
 import { checkLocation } from "../../server_communication";
 import { enumItemProcessorTypes } from "shapez/game/components/item_processor";
+import { apTry } from "../../utils";
+import { getAPUpgradeLocationString } from "../../archipelago/ap_location";
 
 export function classPatch({ $old }) {
     return {
@@ -55,11 +57,7 @@ export function classPatch({ $old }) {
                     this.storedShapes[requirement.shape] -= requirement.amount;
                 }
                 this.upgradeLevels[upgradeIdFixed] = (this.upgradeLevels[upgradeIdFixed] || 0) + 1;
-                checkLocation(
-                    "Checked",
-                    false,
-                    upgradeIdNames[upgradeId] + " Upgrade Tier " + roman(currentLevel + 2)
-                );
+                checkLocation("Checked", false, getAPUpgradeLocationString(upgradeId, currentLevel + 1));
                 this.root.signals.upgradePurchased.dispatch(upgradeId);
                 this.root.app.gameAnalytics.handleUpgradeUnlocked(upgradeId, currentLevel);
                 return true;

@@ -1,4 +1,4 @@
-import { connection, customRewards } from "../../../../global_data";
+import { connection } from "../../../../global_data";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 
 export function classPatch({ $old }) {
@@ -10,7 +10,7 @@ export function classPatch({ $old }) {
 
             if (this.root.currentLayer === "regular") {
                 if (
-                    this.root.hubGoals.isRewardUnlocked(customRewards.wires) ||
+                    this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_wires) ||
                     this.root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_wires_painter_and_levers)
                 ) {
                     this.root.currentLayer = "wires";

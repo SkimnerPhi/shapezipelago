@@ -1,48 +1,45 @@
 import { enumSubShapeToShortcode, ShapeDefinition } from "shapez/game/shape_definition";
 import {
-    apDebugLog,
-    apTry,
     baseBuildingNames,
     colorNames,
     connection,
     currentIngame,
-    customRewards,
-    getIsUnlockedForTrap,
+    enumTrapToHubGoalRewards,
     modImpl,
-    roman,
     subShapeNames,
-    upgradeIdNames,
 } from "./global_data";
 import { CLIENT_STATUS } from "archipelago.js";
 import { enumColorToShortcode } from "shapez/game/colors";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { GameRoot } from "shapez/game/root";
 import { RandomNumberGenerator } from "shapez/core/rng";
+import { apDebugLog, apTry } from "./utils";
+import { getAPUpgradeLocationString } from "./archipelago/ap_location";
 
 /**
  * @type {{[x:string]: (root: GameRoot, resynced: Boolean, index: number) => String}}
  */
 export const receiveItemFunctions = {
     "Progressive Extractor": (root, resynced, index) => {
-        if (root.hubGoals.gainedRewards[customRewards.extractor]) {
+        if (root.hubGoals.gainedRewards[enumHubGoalRewards.reward_extractor]) {
             root.hubGoals.gainedRewards[enumHubGoalRewards.reward_miner_chainable] = 1;
         } else {
-            root.hubGoals.gainedRewards[customRewards.extractor] = 1;
+            root.hubGoals.gainedRewards[enumHubGoalRewards.reward_extractor] = 1;
         }
         return "";
     },
     "Progressive Cutter": (root, resynced, index) => {
         if (connection.unlockVariant === "backwards") {
             if (root.hubGoals.gainedRewards[enumHubGoalRewards.reward_cutter_quad]) {
-                root.hubGoals.gainedRewards[customRewards.cutter] = 1;
+                root.hubGoals.gainedRewards[enumHubGoalRewards.reward_cutter] = 1;
             } else {
                 root.hubGoals.gainedRewards[enumHubGoalRewards.reward_cutter_quad] = 1;
             }
         } else {
-            if (root.hubGoals.gainedRewards[customRewards.cutter]) {
+            if (root.hubGoals.gainedRewards[enumHubGoalRewards.reward_cutter]) {
                 root.hubGoals.gainedRewards[enumHubGoalRewards.reward_cutter_quad] = 1;
             } else {
-                root.hubGoals.gainedRewards[customRewards.cutter] = 1;
+                root.hubGoals.gainedRewards[enumHubGoalRewards.reward_cutter] = 1;
             }
         }
         return "";
@@ -65,28 +62,28 @@ export const receiveItemFunctions = {
                 root.hubGoals.gainedRewards[enumHubGoalRewards.reward_rotater] = 1;
             }
         }
-        root.hubGoals.gainedRewards[customRewards.belt] = 1;
+        root.hubGoals.gainedRewards[enumHubGoalRewards.reward_belt] = 1;
         return "";
     },
     "Progressive Painter": (root, resynced, index) => {
         if (connection.unlockVariant === "backwards") {
             if (root.hubGoals.gainedRewards[enumHubGoalRewards.reward_painter_double]) {
                 root.hubGoals.gainedRewards[enumHubGoalRewards.reward_painter] = 1;
-            } else if (root.hubGoals.gainedRewards[customRewards.painter_quad]) {
+            } else if (root.hubGoals.gainedRewards[enumHubGoalRewards.reward_painter_quad]) {
                 root.hubGoals.gainedRewards[enumHubGoalRewards.reward_painter_double] = 1;
             } else {
-                root.hubGoals.gainedRewards[customRewards.painter_quad] = 1;
+                root.hubGoals.gainedRewards[enumHubGoalRewards.reward_painter_quad] = 1;
             }
         } else {
             if (root.hubGoals.gainedRewards[enumHubGoalRewards.reward_painter_double]) {
-                root.hubGoals.gainedRewards[customRewards.painter_quad] = 1;
+                root.hubGoals.gainedRewards[enumHubGoalRewards.reward_painter_quad] = 1;
             } else if (root.hubGoals.gainedRewards[enumHubGoalRewards.reward_painter]) {
                 root.hubGoals.gainedRewards[enumHubGoalRewards.reward_painter_double] = 1;
             } else {
                 root.hubGoals.gainedRewards[enumHubGoalRewards.reward_painter] = 1;
             }
         }
-        root.hubGoals.gainedRewards[customRewards.belt] = 1;
+        root.hubGoals.gainedRewards[enumHubGoalRewards.reward_belt] = 1;
         return "";
     },
     "Progressive Tunnel": (root, resynced, index) => {
@@ -123,19 +120,19 @@ export const receiveItemFunctions = {
                 root.hubGoals.gainedRewards[enumHubGoalRewards.reward_balancer] = 1;
             }
         }
-        root.hubGoals.gainedRewards[customRewards.belt] = 1;
+        root.hubGoals.gainedRewards[enumHubGoalRewards.reward_belt] = 1;
         return "";
     },
     "Belt": (root, resynced, index) => {
-        root.hubGoals.gainedRewards[customRewards.belt] = 1;
+        root.hubGoals.gainedRewards[enumHubGoalRewards.reward_belt] = 1;
         return "";
     },
     "Extractor": (root, resynced, index) => {
-        root.hubGoals.gainedRewards[customRewards.extractor] = 1;
+        root.hubGoals.gainedRewards[enumHubGoalRewards.reward_extractor] = 1;
         return "";
     },
     "Cutter": (root, resynced, index) => {
-        root.hubGoals.gainedRewards[customRewards.cutter] = 1;
+        root.hubGoals.gainedRewards[enumHubGoalRewards.reward_cutter] = 1;
         return "";
     },
     "Rotator": (root, resynced, index) => {
@@ -171,7 +168,7 @@ export const receiveItemFunctions = {
         return "";
     },
     "Quad Painter": (root, resynced, index) => {
-        root.hubGoals.gainedRewards[customRewards.painter_quad] = 1;
+        root.hubGoals.gainedRewards[enumHubGoalRewards.reward_painter_quad] = 1;
         return "";
     },
     "Balancer": (root, resynced, index) => {
@@ -195,7 +192,7 @@ export const receiveItemFunctions = {
         return "";
     },
     "Trash": (root, resynced, index) => {
-        root.hubGoals.gainedRewards[customRewards.trash] = 1;
+        root.hubGoals.gainedRewards[enumHubGoalRewards.reward_trash] = 1;
         return "";
     },
     "Chaining Extractor": (root, resynced, index) => {
@@ -211,7 +208,7 @@ export const receiveItemFunctions = {
         return "";
     },
     "Switch": (root, resynced, index) => {
-        root.hubGoals.gainedRewards[customRewards.switch] = 1;
+        root.hubGoals.gainedRewards[enumHubGoalRewards.reward_lever] = 1;
         return "";
     },
     "Item Filter": (root, resynced, index) => {
@@ -223,7 +220,7 @@ export const receiveItemFunctions = {
         return "";
     },
     "Wires": (root, resynced, index) => {
-        root.hubGoals.gainedRewards[customRewards.wires] = 1;
+        root.hubGoals.gainedRewards[enumHubGoalRewards.reward_wires] = 1;
         return "";
     },
     "Constant Signal": (root, resynced, index) => {
@@ -547,7 +544,7 @@ export const receiveItemFunctions = {
          */
         const lockable = [];
         for (const trap in currentIngame.trapLocked) {
-            if (getIsUnlockedForTrap[trap](root)) {
+            if (root.hubGoals.isRewardUnlocked(enumTrapToHubGoalRewards[trap])) {
                 lockable.push(trap);
             }
         }
@@ -573,7 +570,10 @@ export const receiveItemFunctions = {
          */
         const throttlable = [];
         for (const trap in currentIngame.trapThrottled) {
-            if (getIsUnlockedForTrap[trap](root) && !currentIngame.trapThrottled[trap]) {
+            if (
+                root.hubGoals.isRewardUnlocked(enumTrapToHubGoalRewards[trap]) &&
+                !currentIngame.trapThrottled[trap]
+            ) {
                 throttlable.push(trap);
             }
         }
@@ -599,7 +599,10 @@ export const receiveItemFunctions = {
          */
         const malfunctionable = [];
         for (const trap in currentIngame.trapMalfunction) {
-            if (getIsUnlockedForTrap[trap](root) && !currentIngame.trapMalfunction[trap]) {
+            if (
+                root.hubGoals.isRewardUnlocked(enumTrapToHubGoalRewards[trap]) &&
+                !currentIngame.trapMalfunction[trap]
+            ) {
                 malfunctionable.push(trap);
             }
         }
@@ -807,7 +810,7 @@ export function resyncLocationChecks() {
     for (const upgradeId of ["belt", "miner", "processors", "painting"]) {
         const currentLevel = currentIngame.root.hubGoals.getUpgradeLevel(upgradeId);
         for (let i = 1; i <= currentLevel; ++i) {
-            toResync.push(upgradeIdNames[upgradeId] + " Upgrade Tier " + roman(i + 1));
+            toResync.push(getAPUpgradeLocationString(upgradeId, i));
         }
     }
     // Send resync packet
@@ -875,8 +878,8 @@ export function processItemsPacket(packet) {
         if (datacache !== null) {
             apDebugLog(`Loaded lock_belt_and_extractor as backwards compatibility: ${datacache}`);
             if (!datacache) {
-                currentIngame.root.hubGoals.gainedRewards[customRewards.belt] = 1;
-                currentIngame.root.hubGoals.gainedRewards[customRewards.extractor] = 1;
+                currentIngame.root.hubGoals.gainedRewards[enumHubGoalRewards.reward_belt] = 1;
+                currentIngame.root.hubGoals.gainedRewards[enumHubGoalRewards.reward_extractor] = 1;
             }
         } else {
             apDebugLog("No lock_belt_and_extractor found in slotData");

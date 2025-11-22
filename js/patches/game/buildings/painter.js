@@ -1,4 +1,4 @@
-import { connection, currentIngame, customRewards } from "../../../global_data";
+import { connection, currentIngame } from "../../../global_data";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { defaultBuildingVariant } from "shapez/game/meta_building";
 import { enumPainterVariants } from "shapez/game/buildings/painter";
@@ -25,7 +25,7 @@ export function classPatch({ $old }) {
             return (
                 $old.getIsUnlocked(root) ||
                 root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_painter_double) ||
-                root.hubGoals.isRewardUnlocked(customRewards.painter_quad)
+                root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_painter_quad)
             );
         },
         getAvailableVariants(root) {
@@ -40,7 +40,7 @@ export function classPatch({ $old }) {
             if (root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_painter_double)) {
                 variants.push(enumPainterVariants.double);
             }
-            if (root.hubGoals.isRewardUnlocked(customRewards.painter_quad)) {
+            if (root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_painter_quad)) {
                 variants.push(enumPainterVariants.quad);
             }
             return variants;

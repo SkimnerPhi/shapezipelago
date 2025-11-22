@@ -1,4 +1,4 @@
-import { connection, currentIngame, customRewards } from "../../../global_data";
+import { connection, currentIngame } from "../../../global_data";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { T } from "shapez/translations";
 import { round1DigitLocalized } from "shapez/core/utils";
@@ -14,7 +14,7 @@ export function classPatch({ $old }) {
             }
 
             return (
-                root.hubGoals.isRewardUnlocked(customRewards.extractor) ||
+                root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_extractor) ||
                 root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_miner_chainable)
             );
         },

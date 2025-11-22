@@ -1,4 +1,4 @@
-import { apAssert, apDebugLog, apTry, connection, currentIngame } from "../../../global_data";
+import { connection, currentIngame } from "../../../global_data";
 import { RandomNumberGenerator } from "shapez/core/rng";
 import {
     categoryRandomUpgradeShapes,
@@ -14,7 +14,8 @@ import {
     vanillaLikeUpgradeShapes,
     vanillaUpgradeShapes,
 } from "../../../requirement_definitions";
-import { enumAPLevelLogic, enumAPUpgradeLogic } from "../../../ap_settings";
+import { enumAPLevelLogic, enumAPUpgradeLogic } from "../../../archipelago/ap_settings";
+import { apAssert, apDebugLog, apTry } from "../../../utils";
 
 export function classPatch({ $old }) {
     return {
