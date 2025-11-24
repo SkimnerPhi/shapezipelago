@@ -28,26 +28,6 @@ export const baseBuildingNames = {
     trash: "Trash",
 };
 
-export const subShapeNames = {
-    rect: "Square",
-    circle: "Circle",
-    star: "Star",
-    windmill: "Windmill",
-};
-
-export const colorNames = {
-    red: "Red",
-    green: "Green",
-    blue: "Blue",
-
-    yellow: "Yellow",
-    purple: "Purple",
-    cyan: "Cyan",
-
-    white: "White",
-    uncolored: "Uncolored",
-};
-
 export const enumTraps = {
     belt: "belt",
     balancer: "balancer",
