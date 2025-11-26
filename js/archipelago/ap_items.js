@@ -1,6 +1,6 @@
 export const enumAPItems = {
     progressive_extractor: "Progressive Extractor",
-    progressive_cutter: "Progressive  Cutter",
+    progressive_cutter: "Progressive Cutter",
     progressive_rotator: "Progressive Rotator",
     progressive_painter: "Progressive Painter",
     progressive_tunnel: "Progressive Tunnel",
