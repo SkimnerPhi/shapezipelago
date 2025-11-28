@@ -119,7 +119,7 @@ function shapeToPatternMap(shape) {
             pattern[i] = _;
             continue;
         }
-        const index = parts.findIndex(p => equals(p, parts[i]));
+        const index = parts.findIndex((p) => equals(p, parts[i]));
         if (index === -1) {
             map.push(parts[i]);
             pattern[i] = inc;
@@ -189,10 +189,10 @@ function pattern0123(parts, s) {
     }
 
     if (subShapesMatch) {
-        return `${toOrderedShapesOrColors(parts.map(p => enumColorToShortcode[p.color]))} ${s.shapes[parts[0].subShape]}`;
+        return `${toOrderedShapesOrColors(parts.map((p) => enumColorToShortcode[p.color]))} ${s.shapes[parts[0].subShape]}`;
     }
     if (colorsMatch) {
-        return `${s.colors[parts[0].color]} ${toOrderedShapesOrColors(parts.map(p => enumSubShapeToShortcode[p.subShape]))}`;
+        return `${s.colors[parts[0].color]} ${toOrderedShapesOrColors(parts.map((p) => enumSubShapeToShortcode[p.subShape]))}`;
     }
 
     return `${s.types.singles} ${toOrderedCornerKeys(parts)}`;
@@ -218,10 +218,10 @@ function pattern012_(parts, s) {
     }
 
     if (subShapesMatch) {
-        return `${toOrderedShapesOrColors(parts.map(p => enumColorToShortcode[p.color]))} ${s.shapes[parts[0].subShape]}`;
+        return `${toOrderedShapesOrColors(parts.map((p) => enumColorToShortcode[p.color]))} ${s.shapes[parts[0].subShape]}`;
     }
     if (colorsMatch) {
-        return `${s.colors[parts[0].color]} ${toOrderedShapesOrColors(parts.map(p => enumSubShapeToShortcode[p.subShape]))}`;
+        return `${s.colors[parts[0].color]} ${toOrderedShapesOrColors(parts.map((p) => enumSubShapeToShortcode[p.subShape]))}`;
     }
 
     return `${s.types.singles} ${toOrderedCornerKeys(parts)}`;
@@ -369,7 +369,7 @@ export function translateShapesanity(name) {
     return currentIngame.translated[name];
 }
 const oneWordLen3 = {
-    "Half": words => {
+    "Half": (words) => {
         const code = capitalShapeNames[words[2]] + capitalColorNames[words[1]];
         return "----" + code + code;
     },
@@ -377,27 +377,27 @@ const oneWordLen3 = {
         const code = capitalShapeNames[words[2]] + capitalColorNames[words[1]];
         return "--" + code + "--" + code;
     },
-    "3-1": words => {
+    "3-1": (words) => {
         return words[2] + words[1] + words[1] + words[1];
     },
-    "Half-Half": words => {
+    "Half-Half": (words) => {
         return words[2] + words[2] + words[1] + words[1];
     },
-    "Checkered": words => {
+    "Checkered": (words) => {
         return words[2] + words[1] + words[2] + words[1];
     },
 };
 const twoWordLen4 = {
-    "AdjacentSingles": words => {
+    "AdjacentSingles": (words) => {
         return "--" + words[3] + words[2] + "--";
     },
-    "Adjacent2-1": words => {
+    "Adjacent2-1": (words) => {
         return "--" + words[3] + words[2] + words[2];
     },
-    "CorneredSingles": words => {
+    "CorneredSingles": (words) => {
         return words[3] + "--" + words[2] + "--";
     },
-    "Cornered2-1": words => {
+    "Cornered2-1": (words) => {
         return words[2] + words[3] + words[2] + "--";
     },
 };

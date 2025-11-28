@@ -206,7 +206,7 @@ export const receiveItemFunctions = {
             }
         }
 
-        const filteredAddable = addable.filter(x => remaining[x] !== 1);
+        const filteredAddable = addable.filter((x) => remaining[x] !== 1);
         if (filteredAddable.length === 0) {
             return ": None";
         }
@@ -331,12 +331,12 @@ export const receiveItemFunctions = {
 
 function func_progressiveUnlockReward(rewardsArr) {
     return function (root) {
-        let rewards = [...rewardsArr];
+        const rewards = [...rewardsArr];
         if (connection.unlockVariant === "backwards") {
             rewards.reverse();
         }
 
-        const next = rewards.find(x => !root.hubGoals.gainedRewards[x]);
+        const next = rewards.find((x) => !root.hubGoals.gainedRewards[x]);
         if (!next) {
             return "";
         }

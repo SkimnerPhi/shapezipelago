@@ -37,7 +37,7 @@ class ModImpl extends Mod {
             this.signals.gameInitialized.add((/** @type {GameRoot} */ root) => {
                 currentIngame.afterRootInitialization(root);
             });
-            this.signals.stateEntered.add(state => {
+            this.signals.stateEntered.add((state) => {
                 apTry("Ingame (de)contruction failed", () => {
                     if (state.key === "InGameState") {
                         new Ingame();

@@ -39,10 +39,10 @@ export function addCommands() {
         }
         modImpl.dialogs.showInfo("Levels debug", text);
     };
-    globalThis.AP.sendAPMessage = message => {
+    globalThis.AP.sendAPMessage = (message) => {
         connection.client.say(message);
     };
-    globalThis.AP.enableDebug = password => {
+    globalThis.AP.enableDebug = (password) => {
         connection.debug -= password;
     };
     globalThis.AP.debugCheck = (name, goal = false) => {
