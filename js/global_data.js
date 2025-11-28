@@ -28,6 +28,12 @@ export const baseBuildingNames = {
     trash: "Trash",
 };
 
+export const enumTrapTypes = {
+    trapLocked: "trapLocked",
+    trapThrottled: "trapThrottled",
+    trapMalfunction: "trapMalfunction",
+};
+
 export const enumTraps = {
     belt: "belt",
     balancer: "balancer",
@@ -427,37 +433,37 @@ export class Ingame {
      */
     efficiency3Interval;
     trapLocked = {
-        [enumTraps.belt]: false,
-        [enumTraps.balancer]: false,
-        [enumTraps.tunnel]: false,
-        [enumTraps.extractor]: false,
-        [enumTraps.cutter]: false,
-        [enumTraps.rotator]: false,
-        [enumTraps.stacker]: false,
-        [enumTraps.painter]: false,
-        [enumTraps.mixer]: false,
-        [enumTraps.trash]: false,
+        [enumTraps.belt]: 0,
+        [enumTraps.balancer]: 0,
+        [enumTraps.tunnel]: 0,
+        [enumTraps.extractor]: 0,
+        [enumTraps.cutter]: 0,
+        [enumTraps.rotator]: 0,
+        [enumTraps.stacker]: 0,
+        [enumTraps.painter]: 0,
+        [enumTraps.mixer]: 0,
+        [enumTraps.trash]: 0,
     };
     trapThrottled = {
-        [enumTraps.belt]: false,
-        [enumTraps.balancer]: false,
-        [enumTraps.tunnel]: false,
-        [enumTraps.extractor]: false,
-        [enumTraps.cutter]: false,
-        [enumTraps.rotator]: false,
-        [enumTraps.stacker]: false,
-        [enumTraps.painter]: false,
-        [enumTraps.mixer]: false,
+        [enumTraps.belt]: 0,
+        [enumTraps.balancer]: 0,
+        [enumTraps.tunnel]: 0,
+        [enumTraps.extractor]: 0,
+        [enumTraps.cutter]: 0,
+        [enumTraps.rotator]: 0,
+        [enumTraps.stacker]: 0,
+        [enumTraps.painter]: 0,
+        [enumTraps.mixer]: 0,
     };
     trapMalfunction = {
-        [enumTraps.cutter]: false,
-        [enumTraps.cutter_quad]: false,
-        [enumTraps.rotator]: false,
-        [enumTraps.rotator_ccw]: false,
-        [enumTraps.rotator_180]: false,
-        [enumTraps.stacker]: false,
-        [enumTraps.painter]: false,
-        [enumTraps.painter_quad]: false,
+        [enumTraps.cutter]: 0,
+        [enumTraps.cutter_quad]: 0,
+        [enumTraps.rotator]: 0,
+        [enumTraps.rotator_ccw]: 0,
+        [enumTraps.rotator_180]: 0,
+        [enumTraps.stacker]: 0,
+        [enumTraps.painter]: 0,
+        [enumTraps.painter_quad]: 0,
     };
     /**
      * @type {{shape: string; required: number; reward: string; throughputOnly: boolean;}[]}

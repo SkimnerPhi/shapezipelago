@@ -13,6 +13,7 @@ import { apDebugLog, apTry } from "./utils";
 import { shapesanityExample } from "./shapesanity";
 import { CLIENT_STATUS } from "archipelago.js";
 import { HUDShapesanity } from "./hud/shapesanity";
+import { BuildingTrapSystem } from "./systems/building_trap";
 
 class ModImpl extends Mod {
     init() {
@@ -24,6 +25,11 @@ class ModImpl extends Mod {
             this.signals.gameStarted.add(this.onGameStarted);
             addInputContainer();
             this.modInterface.registerHudElement("ingame_HUD_Shapesanity", HUDShapesanity);
+            this.modInterface.registerGameSystem({
+                id: "BuildingTrap",
+                systemClass: BuildingTrapSystem,
+                before: "end",
+            });
             registerSavingData();
             addCommands();
             this.signals.gameInitialized.add((/** @type {GameRoot} */ root) => {
