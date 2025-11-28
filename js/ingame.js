@@ -23,10 +23,7 @@ export class Ingame {
      * @type {number}
      */
     processedItemCount = 0;
-    /**
-     * @type {NodeJS.Timer}
-     */
-    efficiency3Interval;
+
     trapLocked = {
         [enumTraps.belt]: 0,
         [enumTraps.balancer]: 0,
@@ -126,23 +123,6 @@ export class Ingame {
         if (connection) {
             connection.reportStatusToServer(CLIENT_STATUS.CONNECTED);
         }
-        this.clearEfficiency3Interval();
         currentIngame = null;
-    }
-
-    /**
-     * @param {() => void} f
-     * @param {number} ms
-     */
-    startEfficiency3Interval(f, ms) {
-        apDebugLog("Starting efficiency3Interval");
-        this.efficiency3Interval = setInterval(f, ms);
-    }
-
-    clearEfficiency3Interval() {
-        if (this.efficiency3Interval) {
-            window.clearInterval(this.efficiency3Interval);
-            this.efficiency3Interval = null;
-        }
     }
 }

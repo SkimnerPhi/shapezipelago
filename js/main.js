@@ -7,8 +7,6 @@ import { addCommands } from "./console_commands";
 import { patchEnums, patchVanillaClasses } from "./patches/patches";
 import { AchievementLocationProxy } from "./achievements";
 import { checkLocation, resyncLocationChecks, shapesanityAnalyzer } from "./server_communication";
-import { enumAnalyticsDataSource } from "shapez/game/production_analytics";
-import { globalConfig } from "shapez/core/config";
 import { apDebugLog, apTry } from "./utils";
 import { shapesanityExample } from "./shapesanity";
 import { CLIENT_STATUS } from "archipelago.js";
@@ -104,18 +102,5 @@ class ModImpl extends Mod {
 
         apTry("Requesting item package failed", () => connection.requestItemPackage());
         apTry("Resyncing locations failed", resyncLocationChecks);
-        if (connection.goal === "efficiency_iii") {
-            currentIngame.startEfficiency3Interval(() => {
-                apTry("Efficiency III failed", () => {
-                    const currentRateRaw = currentIngame.root.productionAnalytics.getCurrentShapeRateRaw(
-                        enumAnalyticsDataSource.delivered,
-                        currentIngame.root.shapeDefinitionMgr.getShapeFromShortKey(connection.blueprintShape)
-                    );
-                    if (currentRateRaw / globalConfig["analyticsSliceDurationSeconds"] >= 256) {
-                        checkLocation("Checked", true);
-                    }
-                });
-            }, 5000);
-        }
     }
 }
