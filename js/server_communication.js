@@ -1,5 +1,5 @@
 import { ShapeDefinition } from "shapez/game/shape_definition";
-import { baseBuildingNames, connection, currentIngame, enumTrapTypes, modImpl } from "./global_data";
+import { baseBuildingNames, enumTrapTypes, modImpl } from "./global_data";
 import { CLIENT_STATUS } from "archipelago.js";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { GameRoot } from "shapez/game/root";
@@ -10,6 +10,8 @@ import { toAPLocationShapesanityName } from "./shapesanity";
 import { enumAPItems } from "./archipelago/ap_items";
 import { clamp } from "shapez/core/utils";
 import { T } from "shapez/translations";
+import { connection } from "./connection";
+import { currentIngame } from "./ingame";
 
 const rng = new RandomNumberGenerator();
 

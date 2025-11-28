@@ -1,11 +1,12 @@
-import { Connection, connection, modImpl } from "./global_data";
+import { modImpl } from "./global_data";
 import { ITEMS_HANDLING_FLAGS } from "archipelago.js";
 import { processItemsPacket } from "./server_communication";
 import { apDebugLog, apTry } from "./utils";
+import { connection, Connection } from "./connection";
 
 export function addInputContainer() {
     apDebugLog("Calling addInputContainer");
-    modImpl.signals.stateEntered.add(state => {
+    modImpl.signals.stateEntered.add((state) => {
         if (state.key === "MainMenuState") {
             apDebugLog("Creating input box");
             // add input box

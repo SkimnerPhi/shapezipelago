@@ -1,7 +1,7 @@
-import { currentIngame } from "../../../global_data";
 import { T } from "shapez/translations";
 import { round1DigitLocalized } from "shapez/core/utils";
 import { enumItemProcessorTypes } from "shapez/game/components/item_processor";
+import { currentIngame } from "../../../ingame";
 
 export function classPatch({ $old }) {
     return {

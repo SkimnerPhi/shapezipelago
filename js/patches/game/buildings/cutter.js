@@ -1,10 +1,11 @@
-import { connection, currentIngame } from "../../../global_data";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { defaultBuildingVariant } from "shapez/game/meta_building";
 import { enumCutterVariants } from "shapez/game/buildings/cutter";
 import { enumItemProcessorTypes } from "shapez/game/components/item_processor";
 import { T } from "shapez/translations";
 import { round1DigitLocalized } from "shapez/core/utils";
+import { connection } from "../../../connection";
+import { currentIngame } from "../../../ingame";
 
 const enumCutterVariantsToProcessorTypes = {
     [defaultBuildingVariant]: enumItemProcessorTypes.cutter,

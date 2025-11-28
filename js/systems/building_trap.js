@@ -1,5 +1,6 @@
 import { GameSystem } from "shapez/game/game_system";
-import { currentIngame, enumTrapTypes } from "../global_data";
+import { enumTrapTypes } from "../global_data";
+import { currentIngame } from "../ingame";
 
 export class BuildingTrapSystem extends GameSystem {
     update() {

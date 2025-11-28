@@ -1,7 +1,7 @@
 import { Mod } from "shapez/mods/mod";
 import { addInputContainer } from "./ui_changes";
 import { registerSavingData } from "./savefile";
-import { connection, currentIngame, Ingame, setModImpl } from "./global_data";
+import { setModImpl } from "./global_data";
 import { GameRoot } from "shapez/game/root";
 import { addCommands } from "./console_commands";
 import { patchEnums, patchVanillaClasses } from "./patches/patches";
@@ -14,6 +14,8 @@ import { shapesanityExample } from "./shapesanity";
 import { CLIENT_STATUS } from "archipelago.js";
 import { HUDShapesanity } from "./hud/shapesanity";
 import { BuildingTrapSystem } from "./systems/building_trap";
+import { connection } from "./connection";
+import { currentIngame, Ingame } from "./ingame";
 
 class ModImpl extends Mod {
     init() {

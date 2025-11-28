@@ -1,6 +1,6 @@
-import { currentIngame } from "../../global_data";
 import { ACHIEVEMENTS } from "shapez/platform/achievement_provider";
 import { ShapeDefinition } from "shapez/game/shape_definition";
+import { currentIngame } from "../../ingame";
 
 export function classPatch({ $old }) {
     return {

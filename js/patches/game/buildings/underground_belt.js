@@ -1,7 +1,8 @@
-import { connection, currentIngame } from "../../../global_data";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { defaultBuildingVariant } from "shapez/game/meta_building";
 import { enumUndergroundBeltVariants } from "shapez/game/buildings/underground_belt";
+import { connection } from "../../../connection";
+import { currentIngame } from "../../../ingame";
 
 export function classPatch({ $old }) {
     return {

@@ -1,7 +1,8 @@
-import { connection, currentIngame } from "../../../global_data";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { T } from "shapez/translations";
 import { round1DigitLocalized } from "shapez/core/utils";
+import { connection } from "../../../connection";
+import { currentIngame } from "../../../ingame";
 
 export function classPatch({ $old }) {
     return {

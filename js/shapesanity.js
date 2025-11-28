@@ -2,7 +2,8 @@ import { enumColorToShortcode } from "shapez/game/colors";
 import { enumSubShape, enumSubShapeToShortcode } from "shapez/game/shape_definition";
 import { T } from "shapez/translations";
 import { enumColors } from "shapez/game/colors";
-import { currentIngame } from "./global_data";
+
+import { currentIngame } from "./ingame";
 
 const shapesanityStrings = {
     colors: {

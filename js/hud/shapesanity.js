@@ -1,7 +1,6 @@
 import { BaseHUDPart } from "shapez/game/hud/base_hud_part";
 import { makeButton, makeDiv, removeAllChildren } from "shapez/core/utils";
 import { apDebugLog, apTry } from "../utils";
-import { connection, currentIngame } from "../global_data";
 import { ClickDetector } from "shapez/core/click_detector";
 import { ACHIEVEMENTS } from "shapez/platform/achievement_provider";
 import { enumAchievementToAPLocations } from "../archipelago/ap_location";
@@ -10,6 +9,8 @@ import { DynamicDomAttach } from "shapez/game/hud/dynamic_dom_attach";
 import { InputReceiver } from "shapez/core/input_receiver";
 import { KeyActionMapper, KEYMAPPINGS } from "shapez/game/key_action_mapper";
 import { translateShapesanity } from "../shapesanity";
+import { connection } from "../connection";
+import { currentIngame } from "../ingame";
 
 export class HUDShapesanity extends BaseHUDPart {
     createElements(parent) {

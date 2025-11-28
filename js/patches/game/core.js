@@ -1,4 +1,3 @@
-import { connection } from "../../global_data";
 import { randomInt } from "shapez/core/utils";
 import { gMetaBuildingRegistry } from "shapez/core/global_registries";
 import { MetaHubBuilding } from "shapez/game/buildings/hub";
@@ -6,6 +5,7 @@ import { Vector } from "shapez/core/vector";
 import { defaultBuildingVariant } from "shapez/game/meta_building";
 import { globalConfig } from "shapez/core/config";
 import { apDebugLog, apTry } from "../../utils";
+import { connection } from "../../connection";
 
 export function classPatch({ $old }) {
     return {

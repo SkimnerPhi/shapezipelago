@@ -4,11 +4,11 @@ import {
     AchievementProviderInterface,
     ACHIEVEMENTS,
 } from "shapez/platform/achievement_provider";
-import { connection } from "./global_data";
 import { checkLocation } from "./server_communication";
 import { AchievementProxy } from "shapez/game/achievement_proxy";
 import { enumAchievementToAPLocations } from "./archipelago/ap_location";
 import { apDebugLog } from "./utils";
+import { connection } from "./connection";
 
 export class AchievementLocationProxy extends AchievementProxy {
     /**

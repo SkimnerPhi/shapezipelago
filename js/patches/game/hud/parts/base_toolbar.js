@@ -1,8 +1,9 @@
-import { connection, currentIngame } from "../../../../global_data";
 import { RandomNumberGenerator } from "shapez/core/rng";
 import { GameRoot } from "shapez/game/root";
 import { MetaBuilding } from "shapez/game/meta_building";
 import { apDebugLog, apTry } from "../../../../utils";
+import { connection } from "../../../../connection";
+import { currentIngame } from "../../../../ingame";
 
 export function classPatch({ $old }) {
     return {

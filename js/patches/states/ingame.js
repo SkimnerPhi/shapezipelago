@@ -1,6 +1,6 @@
 import { GAME_LOADING_STATES } from "shapez/states/ingame";
-import { currentIngame } from "../../global_data";
 import { apDebugLog } from "../../utils";
+import { currentIngame } from "../../ingame";
 
 export function classPatch({ $old }) {
     return {

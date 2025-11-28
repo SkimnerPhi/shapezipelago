@@ -1,5 +1,5 @@
-import { connection } from "../../../../global_data";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
+import { connection } from "../../../../connection";
 
 export function classPatch({ $old }) {
     return {

@@ -1,8 +1,9 @@
-import { connection, currentIngame } from "../../global_data";
 import { checkLocation } from "../../server_communication";
 import { enumItemProcessorTypes } from "shapez/game/components/item_processor";
 import { apTry } from "../../utils";
 import { getAPUpgradeLocationString } from "../../archipelago/ap_location";
+import { connection } from "../../connection";
+import { currentIngame } from "../../ingame";
 
 export function classPatch({ $old }) {
     return {

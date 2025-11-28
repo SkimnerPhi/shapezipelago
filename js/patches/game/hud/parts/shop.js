@@ -1,4 +1,4 @@
-import { currentIngame } from "../../../../global_data";
+import { currentIngame } from "../../../../ingame";
 
 export function classPatch({ $old }) {
     return {
