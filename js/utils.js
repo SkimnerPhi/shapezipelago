@@ -1,4 +1,4 @@
-import { modImpl } from "./global_data";
+import { modImpl } from "./main";
 
 const romanDigits = [
     { key: 1000, val: "M" },

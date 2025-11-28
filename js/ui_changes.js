@@ -1,8 +1,8 @@
-import { modImpl } from "./global_data";
 import { ITEMS_HANDLING_FLAGS } from "archipelago.js";
 import { processItemsPacket } from "./server_communication";
 import { apDebugLog, apTry } from "./utils";
 import { connection, Connection } from "./connection";
+import { modImpl } from "./main";
 
 export function addInputContainer() {
     apDebugLog("Calling addInputContainer");

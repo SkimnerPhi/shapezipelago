@@ -1,7 +1,6 @@
 import { Mod } from "shapez/mods/mod";
 import { addInputContainer } from "./ui_changes";
 import { registerSavingData } from "./savefile";
-import { setModImpl } from "./global_data";
 import { GameRoot } from "shapez/game/root";
 import { addCommands } from "./console_commands";
 import { patchEnums, patchVanillaClasses } from "./patches/patches";
@@ -15,10 +14,15 @@ import { BuildingTrapSystem } from "./systems/building_trap";
 import { connection } from "./connection";
 import { currentIngame, Ingame } from "./ingame";
 
+/**
+ * @type {Mod}
+ */
+export let modImpl;
+
 class ModImpl extends Mod {
     init() {
         apTry("Mod initialization failed", () => {
-            setModImpl(this);
+            modImpl = this;
             patchVanillaClasses(this.modInterface);
             patchEnums();
             this.signals.gameInitialized.add(this.onGameInitialized);

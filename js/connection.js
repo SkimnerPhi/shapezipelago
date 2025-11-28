@@ -6,7 +6,8 @@ import {
     SERVER_PACKET_TYPE,
 } from "archipelago.js";
 import { apDebugLog, apUserLog } from "./utils";
-import { modImpl } from "./global_data";
+
+import { modImpl } from "./main";
 
 /**
  * @type {Connection}

@@ -2,8 +2,9 @@ import { Signal } from "shapez/core/signal";
 import { apDebugLog } from "./utils";
 import { connection } from "./connection";
 import { CLIENT_STATUS } from "archipelago.js";
-import { enumTraps, modImpl } from "./global_data";
 import { GameRoot } from "shapez/game/root";
+import { modImpl } from "./main";
+import { enumTraps } from "./archipelago/ap_traps";
 
 /**
  * @type {Ingame}

@@ -1,10 +1,11 @@
 import { RandomNumberGenerator } from "shapez/core/rng";
-import { baseBuildingNames, modImpl } from "./global_data";
 import { ShapeDefinition } from "shapez/game/shape_definition";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { apDebugLog } from "./utils";
 import { connection } from "./connection";
 import { currentIngame } from "./ingame";
+import { modImpl } from "./main";
+import { baseBuildingNames } from "./server_communication";
 
 export const enumVanillaShapes = [
     { shape: "CuCuCuCu", required: 30 },

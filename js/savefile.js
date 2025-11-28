@@ -1,9 +1,9 @@
 import { GameRoot } from "shapez/game/root";
-import { modImpl } from "./global_data";
 import { processItemsPacket } from "./server_communication";
 import { apDebugLog } from "./utils";
 import { connection, Connection } from "./connection";
 import { currentIngame } from "./ingame";
+import { modImpl } from "./main";
 
 export function registerSavingData() {
     apDebugLog("Calling registerSavingData");

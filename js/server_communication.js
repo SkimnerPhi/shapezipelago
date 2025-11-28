@@ -1,5 +1,4 @@
 import { ShapeDefinition } from "shapez/game/shape_definition";
-import { baseBuildingNames, enumTrapTypes, modImpl } from "./global_data";
 import { CLIENT_STATUS } from "archipelago.js";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { GameRoot } from "shapez/game/root";
@@ -12,8 +11,27 @@ import { clamp } from "shapez/core/utils";
 import { T } from "shapez/translations";
 import { connection } from "./connection";
 import { currentIngame } from "./ingame";
+import { modImpl } from "./main";
+import { enumTrapTypes } from "./archipelago/ap_traps";
 
 const rng = new RandomNumberGenerator();
+
+export const baseBuildingNames = {
+    belt: "Belt",
+    balancer: "Balancer",
+    tunnel: "Tunnel",
+    extractor: "Extractor",
+    cutter: "Cutter",
+    cutter_quad: "Quad Cutter",
+    rotator: "Rotator",
+    rotator_ccw: "Rotator (CCW)",
+    rotator_180: "Rotator (180°)",
+    stacker: "Stacker",
+    painter: "Painter",
+    painter_quad: "Quad Painter",
+    mixer: "Color Mixer",
+    trash: "Trash",
+};
 
 /**
  * @type {{[x:string]: (root: GameRoot, resynced: Boolean, index: number) => String}}
