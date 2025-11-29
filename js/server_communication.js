@@ -3,7 +3,7 @@ import { CLIENT_STATUS } from "archipelago.js";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { GameRoot } from "shapez/game/root";
 import { RandomNumberGenerator } from "shapez/core/rng";
-import { getAPUpgradeLocationString } from "./archipelago/ap_location";
+import { getAPLevelLocationString, getAPUpgradeLocationString } from "./archipelago/ap_location";
 import { toAPLocationShapesanityName } from "./shapesanity";
 import { enumAPItems } from "./archipelago/ap_items";
 import { clamp } from "shapez/core/utils";
@@ -478,13 +478,13 @@ export function resyncLocationChecks(root) {
     // resync levels
     for (let i = 1; i < root.hubGoals.level; ++i) {
         // current level is what is to be completed
-        toResync.push(`Level ${i}`);
+        toResync.push(getAPLevelLocationString(i));
     }
     if (root.hubGoals.level > 20) {
-        toResync.push("Level 20 Additional", "Level 20 Additional 2");
+        toResync.push(getAPLevelLocationString(20, 1), getAPLevelLocationString(20, 2));
     }
     if (root.hubGoals.level > 1) {
-        toResync.push("Level 1 Additional");
+        toResync.push(getAPLevelLocationString(1, 1));
     }
     // resync upgrades
     for (const upgradeId of ["belt", "miner", "processors", "painting"]) {

@@ -1,6 +1,6 @@
 import { checkLocation } from "../../server_communication";
 import { enumItemProcessorTypes } from "shapez/game/components/item_processor";
-import { getAPUpgradeLocationString } from "../../archipelago/ap_location";
+import { getAPLevelLocationString, getAPUpgradeLocationString } from "../../archipelago/ap_location";
 import { connection } from "../../connection";
 import { currentIngame } from "../../ingame";
 
@@ -13,17 +13,17 @@ export function classPatch({ $old }) {
 
             this.root.app.gameAnalytics.handleLevelCompleted(this.level);
             if (this.level === 1) {
-                checkLocation("Checked", false, "Level 1", "Level 1 Additional");
+                checkLocation("Checked", false, getAPLevelLocationString(1), getAPLevelLocationString(1, 1));
             } else if (this.level === 20) {
                 checkLocation(
                     "Checked",
                     false,
-                    "Level 20",
-                    "Level 20 Additional",
-                    "Level 20 Additional 2"
+                    getAPLevelLocationString(1),
+                    getAPLevelLocationString(1, 1),
+                    getAPLevelLocationString(1, 2)
                 );
             } else {
-                checkLocation("Checked", false, "Level " + this.level);
+                checkLocation("Checked", false, getAPLevelLocationString(this.level));
             }
             if (connection.goal === "vanilla" || connection.goal === "mam") {
                 if (connection.levelsToGenerate <= this.level) {
