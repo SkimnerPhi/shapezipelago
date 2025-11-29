@@ -1,12 +1,11 @@
 import { GameRoot } from "shapez/game/root";
 import { processItemsPacket } from "./server_communication";
-import { apDebugLog } from "./utils";
 import { connection, Connection } from "./connection";
 import { currentIngame } from "./ingame";
-import { modImpl } from "./main";
+import { logger, modImpl } from "./main";
 
 export function registerSavingData() {
-    apDebugLog("Calling registerSavingData");
+    logger.debug("Calling registerSavingData");
     modImpl.signals.gameSerialized.add((/** @type {GameRoot} */ root, savegame) => {
         if (connection) {
             // Connection is established, use always-present connection.connectionInformation
@@ -19,7 +18,7 @@ export function registerSavingData() {
             return;
         }
         savegame.modExtraData["processedItemCount"] = currentIngame.processedItemCount;
-        apDebugLog("Serialized with processed item count " + currentIngame.processedItemCount);
+        logger.debug("Serialized with processed item count " + currentIngame.processedItemCount);
     });
     modImpl.signals.gameDeserialized.add((/**@type GameRoot */ root, savegame) => {
         const lateInitializations = () => {
@@ -29,26 +28,26 @@ export function registerSavingData() {
         };
         if (connection) {
             currentIngame.processedItemCount = savegame.modExtraData["processedItemCount"] || 0;
-            apDebugLog("Deserialized with processed item count " + currentIngame.processedItemCount);
+            logger.debug("Deserialized with processed item count " + currentIngame.processedItemCount);
             lateInitializations();
         } else {
             if (savegame.modExtraData["connectInfo"]) {
                 currentIngame.isTryingToConnect = true;
                 currentIngame.processedItemCount = savegame.modExtraData["processedItemCount"] || 0;
                 currentIngame.connectionInformation = savegame.modExtraData["connectInfo"];
-                apDebugLog("Deserialized with processed item count " + currentIngame.processedItemCount);
+                logger.debug("Deserialized with processed item count " + currentIngame.processedItemCount);
                 new Connection()
                     .tryConnect(savegame.modExtraData["connectInfo"], (packet) =>
                         processItemsPacket(root, packet)
                     )
                     .finally(function () {
                         // Resuming InGame stages
-                        apDebugLog("Redeserializing data");
+                        logger.debug("Redeserializing data");
                         root.map.deserialize(savegame.map);
                         root.gameMode.deserialize(savegame.gameMode);
                         root.hubGoals.deserialize(savegame.hubGoals, root);
                         lateInitializations();
-                        apDebugLog("Switching to stage 5 after trying to connect");
+                        logger.debug("Switching to stage 5 after trying to connect");
                         root.app.gameAnalytics.handleGameResumed();
                         root.gameState.stage5FirstUpdate();
                     });

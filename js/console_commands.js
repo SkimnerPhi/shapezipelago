@@ -1,11 +1,10 @@
 import { checkLocation, receiveItemFunctions } from "./server_communication";
-import { apDebugLog, apTry } from "./utils";
 import { connection } from "./connection";
 import { currentIngame } from "./ingame";
-import { modImpl } from "./main";
+import { logger, modImpl } from "./main";
 
 export function addCommands() {
-    apDebugLog("Calling addCommands");
+    logger.debug("Calling addCommands");
     globalThis.AP = {};
     // Objects
     globalThis.AP.connenction = () => {
@@ -52,16 +51,9 @@ export function addCommands() {
             connection.client.say("Oops");
         }
     };
-    globalThis.AP.testError = () => {
-        apTry("Test error", () => {
-            throw Error("Bottom text.");
-        });
-    };
     globalThis.AP.setDebugSetting = (name, value) => {
-        apTry("Debug settings error", () => {
-            modImpl.dialogs.showInfo("Important", `Are you sure what you're doing!? Set ${name} to ${value}`);
-            modImpl.settings[name] = value;
-            modImpl.saveSettings();
-        });
+        modImpl.dialogs.showInfo("Important", `Are you sure what you're doing!? Set ${name} to ${value}`);
+        modImpl.settings[name] = value;
+        modImpl.saveSettings();
     };
 }

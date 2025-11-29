@@ -14,9 +14,9 @@ import {
     vanillaUpgradeShapes,
 } from "../../../requirement_definitions";
 import { enumAPLevelLogic, enumAPUpgradeLogic } from "../../../archipelago/ap_settings";
-import { apAssert, apDebugLog, apTry } from "../../../utils";
 import { connection } from "../../../connection";
 import { currentIngame } from "../../../ingame";
+import { logger } from "../../../main";
 
 export function classPatch({ $old }) {
     return {
@@ -25,12 +25,11 @@ export function classPatch({ $old }) {
                 return $old.getUpgrades();
             }
 
-            apTry("Upgrade definitions failed", () => {
-                if (!currentIngame.upgradeDefs) {
-                    apDebugLog("Calculating upgrade definitions");
-                    currentIngame.upgradeDefs = calcUpgradeDefinitions();
-                }
-            });
+            if (!currentIngame.upgradeDefs) {
+                logger.debug("Calculating upgrade definitions");
+                currentIngame.upgradeDefs = calcUpgradeDefinitions();
+            }
+
             return currentIngame.upgradeDefs;
         },
         getLevelDefinitions() {
@@ -38,12 +37,11 @@ export function classPatch({ $old }) {
                 return $old.getLevelDefinitions();
             }
 
-            apTry("Level definitions failed", () => {
-                if (!currentIngame.levelDefs) {
-                    apDebugLog("Calculating level definitions");
-                    currentIngame.levelDefs = calcLevelDefinitions();
-                }
-            });
+            if (!currentIngame.levelDefs) {
+                logger.debug("Calculating level definitions");
+                currentIngame.levelDefs = calcLevelDefinitions();
+            }
+
             return currentIngame.levelDefs;
         },
     };
@@ -79,7 +77,7 @@ function calcLevelDefinitions() {
         case enumAPLevelLogic.dopamine_overflow:
             return randomizedHardcoreDopamineShapes(randomizer, 0);
         default:
-            apAssert(false, "Illegal level logic type: " + connection.levelsLogic);
+            assert(false, "Illegal level logic type: " + connection.levelsLogic);
     }
 }
 
@@ -101,6 +99,6 @@ function calcUpgradeDefinitions() {
         case enumAPUpgradeLogic.hardcore:
             return hardcoreUpgradeShapes(randomizer);
         default:
-            apAssert(false, "Illegal upgrade logic type: " + connection.upgradesLogic);
+            assert(false, "Illegal upgrade logic type: " + connection.upgradesLogic);
     }
 }

@@ -1,6 +1,5 @@
 import { checkLocation } from "../../server_communication";
 import { enumItemProcessorTypes } from "shapez/game/components/item_processor";
-import { apTry } from "../../utils";
 import { getAPUpgradeLocationString } from "../../archipelago/ap_location";
 import { connection } from "../../connection";
 import { currentIngame } from "../../ingame";
@@ -12,57 +11,53 @@ export function classPatch({ $old }) {
                 return $old.onGoalCompleted();
             }
 
-            apTry("Completing level failed", () => {
-                this.root.app.gameAnalytics.handleLevelCompleted(this.level);
-                if (this.level === 1) {
-                    checkLocation("Checked", false, "Level 1", "Level 1 Additional");
-                } else if (this.level === 20) {
-                    checkLocation(
-                        "Checked",
-                        false,
-                        "Level 20",
-                        "Level 20 Additional",
-                        "Level 20 Additional 2"
-                    );
-                } else {
-                    checkLocation("Checked", false, "Level " + this.level);
+            this.root.app.gameAnalytics.handleLevelCompleted(this.level);
+            if (this.level === 1) {
+                checkLocation("Checked", false, "Level 1", "Level 1 Additional");
+            } else if (this.level === 20) {
+                checkLocation(
+                    "Checked",
+                    false,
+                    "Level 20",
+                    "Level 20 Additional",
+                    "Level 20 Additional 2"
+                );
+            } else {
+                checkLocation("Checked", false, "Level " + this.level);
+            }
+            if (connection.goal === "vanilla" || connection.goal === "mam") {
+                if (connection.levelsToGenerate <= this.level) {
+                    checkLocation("Checked", true);
                 }
-                if (connection.goal === "vanilla" || connection.goal === "mam") {
-                    if (connection.levelsToGenerate <= this.level) {
-                        checkLocation("Checked", true);
-                    }
-                }
-                ++this.level;
-                this.computeNextGoal();
-                this.root.signals.storyGoalCompleted.dispatch(this.level - 1, this.currentGoal.reward);
-            });
+            }
+            ++this.level;
+            this.computeNextGoal();
+            this.root.signals.storyGoalCompleted.dispatch(this.level - 1, this.currentGoal.reward);
         },
         tryUnlockUpgrade(upgradeId) {
             if (!connection) {
                 return $old.tryUnlockUpgrade(upgradeId);
             }
 
-            return apTry("Unlocking upgrade failed", () => {
-                const upgradeIdFixed = upgradeId.toString();
-                if (!this.canUnlockUpgrade(upgradeId)) {
-                    return false;
-                }
-                const upgradeTiers = this.root.gameMode.getUpgrades()[upgradeIdFixed];
-                const currentLevel = this.getUpgradeLevel(upgradeId);
-                const tierData = upgradeTiers[currentLevel];
-                if (!tierData) {
-                    return false;
-                }
-                for (let i = 0; i < tierData.required.length; ++i) {
-                    const requirement = tierData.required[i];
-                    this.storedShapes[requirement.shape] -= requirement.amount;
-                }
-                this.upgradeLevels[upgradeIdFixed] = (this.upgradeLevels[upgradeIdFixed] || 0) + 1;
-                checkLocation("Checked", false, getAPUpgradeLocationString(upgradeId, currentLevel + 1));
-                this.root.signals.upgradePurchased.dispatch(upgradeId);
-                this.root.app.gameAnalytics.handleUpgradeUnlocked(upgradeId, currentLevel);
-                return true;
-            });
+            const upgradeIdFixed = upgradeId.toString();
+            if (!this.canUnlockUpgrade(upgradeId)) {
+                return false;
+            }
+            const upgradeTiers = this.root.gameMode.getUpgrades()[upgradeIdFixed];
+            const currentLevel = this.getUpgradeLevel(upgradeId);
+            const tierData = upgradeTiers[currentLevel];
+            if (!tierData) {
+                return false;
+            }
+            for (let i = 0; i < tierData.required.length; ++i) {
+                const requirement = tierData.required[i];
+                this.storedShapes[requirement.shape] -= requirement.amount;
+            }
+            this.upgradeLevels[upgradeIdFixed] = (this.upgradeLevels[upgradeIdFixed] || 0) + 1;
+            checkLocation("Checked", false, getAPUpgradeLocationString(upgradeId, currentLevel + 1));
+            this.root.signals.upgradePurchased.dispatch(upgradeId);
+            this.root.app.gameAnalytics.handleUpgradeUnlocked(upgradeId, currentLevel);
+            return true;
         },
         getBeltBaseSpeed() {
             return $old.getBeltBaseSpeed() * (currentIngame.trapThrottled.belt ? 0.5 : 1);

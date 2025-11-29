@@ -1,5 +1,3 @@
-import { modImpl } from "./main";
-
 const romanDigits = [
     { key: 1000, val: "M" },
     { key: 900, val: "CM" },
@@ -28,64 +26,4 @@ export function toRoman(number) {
         }
     }
     return rom;
-}
-
-/**
- * @param {string} message
- */
-export function apUserLog(message) {
-    console.log("%c[AP] " + message, "background: #dddddd; color: #0044ff");
-}
-
-export function apDebugLog(message) {
-    console.log("%c[AP] " + message, "color: #8d07b6");
-}
-
-/**
- * @param {boolean} condition
- * @param {string} message
- */
-export function apAssert(condition, message) {
-    if (!condition) {
-        apThrow(message, new Error(message), true);
-    }
-}
-
-/**
- * @param {string} title
- * @param {() => any} code
- */
-export function apTry(title, code) {
-    try {
-        return code();
-    } catch (error) {
-        apThrow(title, error, false);
-    }
-}
-
-/**
- * @param {string} message
- * @param {Error} error
- * @param {boolean} shouldThrowCompletely
- */
-function apThrow(message, error, shouldThrowCompletely) {
-    const text =
-        message +
-        "<br />---<br />" +
-        error.stack.replaceAll("<", "").replaceAll(">", "").replaceAll("    at ", "<br />- at ");
-    if (document.body.getElementsByClassName("gameLoadingOverlay").length) {
-        const gameLoadingOverlay = document.body.getElementsByClassName("gameLoadingOverlay").item(0);
-        const prefab_GameHint = gameLoadingOverlay.getElementsByClassName("prefab_GameHint").item(0);
-        prefab_GameHint.innerHTML =
-            "ERROR " + shapez.T.mods.shapezipelago.infoBox.aptry.title + "<br />" + text;
-    } else {
-        modImpl.dialogs.showInfo(shapez.T.mods.shapezipelago.infoBox.aptry.title, text);
-    }
-    if (!shouldThrowCompletely) {
-        setTimeout(() => {
-            throw error;
-        });
-    } else {
-        throw error;
-    }
 }

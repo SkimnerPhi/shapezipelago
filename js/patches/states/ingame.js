@@ -1,6 +1,6 @@
 import { GAME_LOADING_STATES } from "shapez/states/ingame";
-import { apDebugLog } from "../../utils";
 import { currentIngame } from "../../ingame";
+import { logger } from "../../main";
 
 export function classPatch({ $old }) {
     return {
@@ -12,7 +12,7 @@ export function classPatch({ $old }) {
                 }
                 // This needs to "pause" if trying to connect
                 if (!currentIngame.isTryingToConnect) {
-                    apDebugLog("Switching to stage 5 without trying to connect");
+                    logger.debug("Switching to stage 5 without trying to connect");
                     this.app.gameAnalytics.handleGameResumed();
                     this.stage5FirstUpdate();
                 }

@@ -3,7 +3,6 @@ import { CLIENT_STATUS } from "archipelago.js";
 import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
 import { GameRoot } from "shapez/game/root";
 import { RandomNumberGenerator } from "shapez/core/rng";
-import { apDebugLog, apTry } from "./utils";
 import { getAPUpgradeLocationString } from "./archipelago/ap_location";
 import { toAPLocationShapesanityName } from "./shapesanity";
 import { enumAPItems } from "./archipelago/ap_items";
@@ -11,7 +10,7 @@ import { clamp } from "shapez/core/utils";
 import { T } from "shapez/translations";
 import { connection } from "./connection";
 import { currentIngame } from "./ingame";
-import { modImpl } from "./main";
+import { logger, modImpl } from "./main";
 import { enumTrapTypes } from "./archipelago/ap_traps";
 
 const rng = new RandomNumberGenerator();
@@ -447,36 +446,34 @@ export function checkLocation(resyncMessage, goal, ...names) {
  * @param {boolean} goal
  */
 export function bulkCheckLocation(resyncMessage, goal, names) {
-    apTry("Checking location failed", () => {
-        apDebugLog(`Checking ${names.length} locations (goal==${goal}): ${names.toString()}`);
-        if (goal) {
-            connection.reportStatusToServer(CLIENT_STATUS.GOAL);
+    logger.debug(`Checking ${names.length} locations (goal==${goal}): ${names.toString()}`);
+    if (goal) {
+        connection.reportStatusToServer(CLIENT_STATUS.GOAL);
+    }
+    const locids = [];
+    const namesCopy = names.slice();
+    for (const name of namesCopy) {
+        if (name.startsWith("Shapesanity")) {
+            names.push(
+                "Shapesanity " +
+                    (connection.shapesanityNames.indexOf(name.substring("Shapesanity ".length)) + 1)
+            );
+            names.splice(names.indexOf(name), 1); // Get rid of pre-0.5.0 shapesanity location names
         }
-        const locids = [];
-        const namesCopy = names.slice();
-        for (const name of namesCopy) {
-            if (name.startsWith("Shapesanity")) {
-                names.push(
-                    "Shapesanity " +
-                        (connection.shapesanityNames.indexOf(name.substring("Shapesanity ".length)) + 1)
-                );
-                names.splice(names.indexOf(name), 1); // Get rid of pre-0.5.0 shapesanity location names
-            }
+    }
+    for (const name of names) {
+        const nextId = connection.gamepackage.location_name_to_id[name];
+        if (nextId !== null && connection.client.locations.missing.includes(nextId)) {
+            locids.push(nextId);
+            logger.debug(`${resyncMessage} location ${name} with ID ${nextId}`);
         }
-        for (const name of names) {
-            const nextId = connection.gamepackage.location_name_to_id[name];
-            if (nextId !== null && connection.client.locations.missing.includes(nextId)) {
-                locids.push(nextId);
-                apDebugLog(`${resyncMessage} location ${name} with ID ${nextId}`);
-            }
-        }
-        connection.sendLocationChecks(locids);
-    });
+    }
+    connection.sendLocationChecks(locids);
 }
 
 // This isn't an ideal location for this function, but it's the best option for now
 export function resyncLocationChecks(root) {
-    apDebugLog("Resyncing already reached locations");
+    logger.debug("Resyncing already reached locations");
     const toResync = [];
     // resync levels
     for (let i = 1; i < root.hubGoals.level; ++i) {
@@ -527,7 +524,7 @@ export function resyncLocationChecks(root) {
  * @param {import("archipelago.js").ReceivedItemsPacket} packet
  */
 export function processItemsPacket(root, packet) {
-    apDebugLog(
+    logger.debug(
         "Received packet with " +
             packet.items.length +
             " items and reported index " +
@@ -560,17 +557,17 @@ export function processItemsPacket(root, packet) {
         // Backwards compatibility to 0.5.3
         const datacache = connection.client.data.slotData["lock_belt_and_extractor"];
         if (datacache !== null) {
-            apDebugLog(`Loaded lock_belt_and_extractor as backwards compatibility: ${datacache}`);
+            logger.debug(`Loaded lock_belt_and_extractor as backwards compatibility: ${datacache}`);
             if (!datacache) {
                 root.hubGoals.gainedRewards[enumHubGoalRewards.reward_belt] = 1;
                 root.hubGoals.gainedRewards[enumHubGoalRewards.reward_miner] = 1;
             }
         } else {
-            apDebugLog("No lock_belt_and_extractor found in slotData");
+            logger.debug("No lock_belt_and_extractor found in slotData");
         }
     }
     if (currentIngame.processedItemCount === all_items.length) {
-        apDebugLog("Items up-to-date");
+        logger.debug("Items up-to-date");
     } else if (currentIngame.processedItemCount === all_items.length - 1) {
         receiveItem(
             root,
@@ -645,11 +642,8 @@ export function processItemsPacket(root, packet) {
  */
 function receiveItem(root, item, showInfo, resynced, index) {
     const itemName = connection.getItemName(item.item);
-    let message = ": [ERROR]";
-    apTry("Item receiving failed", () => {
-        message = receiveItemFunctions[itemName](root, resynced, index);
-    });
-    apDebugLog("Processed item " + itemName + message);
+    const message = receiveItemFunctions[itemName](root, resynced, index);
+    logger.debug("Processed item " + itemName + message);
     if (showInfo) {
         const sendingPlayerName = connection.getPlayername(item.player);
         const foundLocationName = connection.getLocationName(item.player, item.location);
@@ -672,16 +666,14 @@ function receiveItem(root, item, showInfo, resynced, index) {
  * @param {ShapeDefinition} shape
  */
 export function shapesanityAnalyzer(shape) {
-    apTry("Analyzing shapesanity failed", () => {
-        if (shape.layers.length !== 1) {
-            return;
-        }
-        if (connection.shapesanityCache[shape.getHash()]) {
-            return;
-        }
+    if (shape.layers.length !== 1) {
+        return;
+    }
+    if (connection.shapesanityCache[shape.getHash()]) {
+        return;
+    }
 
-        const shapesanity = toAPLocationShapesanityName();
-        checkLocation("Checked", false, shapesanity);
-        connection.shapesanityCache[shape.getHash()] = true;
-    });
+    const shapesanity = toAPLocationShapesanityName();
+    checkLocation("Checked", false, shapesanity);
+    connection.shapesanityCache[shape.getHash()] = true;
 }

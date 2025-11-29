@@ -7,15 +7,15 @@ import {
 import { checkLocation } from "./server_communication";
 import { AchievementProxy } from "shapez/game/achievement_proxy";
 import { enumAchievementToAPLocations } from "./archipelago/ap_location";
-import { apDebugLog } from "./utils";
 import { connection } from "./connection";
+import { logger } from "./main";
 
 export class AchievementLocationProxy extends AchievementProxy {
     /**
      * @param {GameRoot} root
      */
     constructor(root) {
-        apDebugLog("Constructing AchievementLocationProxy");
+        logger.debug("Constructing AchievementLocationProxy");
         root.app.achievementProvider = new AchievementLocationProvider(root.app);
         super(root);
     }
@@ -26,7 +26,7 @@ export class AchievementLocationProvider extends AchievementProviderInterface {
         super(app);
         this.initialized = false;
         this.collection = new AchievementCollection(this.activate.bind(this));
-        apDebugLog("Collection created with " + this.collection.map.size + " achievements");
+        logger.debug("Collection created with " + this.collection.map.size + " achievements");
     }
 
     initialize() {
@@ -38,10 +38,10 @@ export class AchievementLocationProvider extends AchievementProviderInterface {
         try {
             this.collection = new AchievementCollection(this.activate.bind(this));
             this.collection.initialize(root);
-            apDebugLog("Initialized " + this.collection.map.size + " relevant achievements");
+            logger.debug("Initialized " + this.collection.map.size + " relevant achievements");
             return Promise.resolve();
         } catch (err) {
-            apDebugLog("Failed to initialize the collection");
+            logger.debug("Failed to initialize the collection");
             return Promise.reject(err);
         }
     }

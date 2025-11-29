@@ -1,9 +1,8 @@
 import { Signal } from "shapez/core/signal";
-import { apDebugLog } from "./utils";
 import { connection } from "./connection";
 import { CLIENT_STATUS } from "archipelago.js";
 import { GameRoot } from "shapez/game/root";
-import { modImpl } from "./main";
+import { logger, modImpl } from "./main";
 import { enumTraps } from "./archipelago/ap_traps";
 
 /**
@@ -106,9 +105,9 @@ export class Ingame {
     connectionInformation;
 
     constructor() {
-        apDebugLog("Constructing Ingame object");
+        logger.debug("Constructing Ingame object");
         currentIngame = this;
-        apDebugLog("Ingame object constructed");
+        logger.debug("Ingame object constructed");
     }
 
     /**
@@ -120,7 +119,7 @@ export class Ingame {
     }
 
     leave() {
-        apDebugLog("Leaving and destroying Ingame object");
+        logger.debug("Leaving and destroying Ingame object");
         if (connection) {
             connection.reportStatusToServer(CLIENT_STATUS.CONNECTED);
         }

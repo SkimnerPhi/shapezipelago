@@ -1,10 +1,6 @@
-import { RandomNumberGenerator } from "shapez/core/rng";
-import { ShapeDefinition } from "shapez/game/shape_definition";
-import { enumHubGoalRewards } from "shapez/game/tutorial_goals";
-import { apDebugLog } from "./utils";
 import { connection } from "./connection";
 import { currentIngame } from "./ingame";
-import { modImpl } from "./main";
+import { logger, modImpl } from "./main";
 import { baseBuildingNames } from "./server_communication";
 
 export const enumVanillaShapes = [
@@ -1097,7 +1093,7 @@ function calcRandomShape(
 ) {
     // Detailed console output for debugging
     if (modImpl.settings.debugGeneratorLogDepth >= 1) {
-        apDebugLog(
+        logger.debug(
             `SHAPE comp=${complexity} ` +
                 [hasCutter, hasRotator, hasStacker, hasPainter, hasMixer].join(" ") +
                 (exclude.length ? " EXCLUDE " + exclude.join(" ") : "")
@@ -1196,7 +1192,7 @@ function calcRandomShape(
  */
 function stackLayers(bottom, newlayer, available, tasked, floatCutting) {
     if (modImpl.settings.debugGeneratorLogDepth >= 2) {
-        apDebugLog(
+        logger.debug(
             `STACK bottom=${bottom} newlayer=${newlayer} ${JSON.stringify(available)} ${JSON.stringify(
                 tasked
             )} ${floatCutting}`
@@ -1269,7 +1265,7 @@ function stackLayers(bottom, newlayer, available, tasked, floatCutting) {
  */
 function calcRandomLayer(randomizer, complexity, available, tasked, important) {
     if (modImpl.settings.debugGeneratorLogDepth >= 2) {
-        apDebugLog(
+        logger.debug(
             `LAYER comp=${complexity} ${JSON.stringify(available)} ${JSON.stringify(tasked)} ${JSON.stringify(
                 important
             )}`
@@ -1716,7 +1712,7 @@ function isWindmillHalf(half) {
  */
 function calcRandomHalf(randomizer, complexity, available, tasked, important, windmillAllowed) {
     if (modImpl.settings.debugGeneratorLogDepth >= 3) {
-        apDebugLog(
+        logger.debug(
             `HALF comp=${complexity} ${JSON.stringify(available)} ${JSON.stringify(tasked)} ${JSON.stringify(
                 important
             )}`
@@ -1819,7 +1815,7 @@ function calcRandomSubShape(randomizer, windmillAllowed) {
  */
 function calcRandomColor(randomizer, complexity, available, tasked, important, preferredColor = null) {
     if (modImpl.settings.debugGeneratorLogDepth >= 4) {
-        apDebugLog(
+        logger.debug(
             `COLOR comp=${complexity} ${JSON.stringify(available)} ${JSON.stringify(tasked)} ${JSON.stringify(
                 important
             )} ${preferredColor}`

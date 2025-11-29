@@ -5,9 +5,8 @@ import {
     CONNECTION_STATUS,
     SERVER_PACKET_TYPE,
 } from "archipelago.js";
-import { apDebugLog, apUserLog } from "./utils";
 
-import { modImpl } from "./main";
+import { modImpl, logger } from "./main";
 
 /**
  * @type {Connection}
@@ -24,7 +23,7 @@ export class Connection {
      * @returns {Promise}
      */
     tryConnect(connectInfo, processItemsPacket) {
-        apDebugLog("Trying to connect to server");
+        logger.debug("Trying to connect to server");
         // Phar (dev of the library) said the library already follows 0.5.0 protocol
         connectInfo.version = {
             major: 0,
@@ -34,14 +33,14 @@ export class Connection {
         return this.client
             .connect(connectInfo)
             .then(() => {
-                apUserLog("Connected to the server");
+                logger.log("Connected to the server");
                 connection = this;
                 this.reportStatusToServer(CLIENT_STATUS.CONNECTED);
                 this.connectionInformation = connectInfo;
 
                 this.client.addListener(SERVER_PACKET_TYPE.PRINT_JSON, (packet, message) => {
                     // @ts-ignore
-                    apUserLog((packet.slot !== null ? this.client.players.name(packet.slot) + ": " : "") + message);
+                    logger.log((packet.slot !== null ? this.client.players.name(packet.slot) + ": " : "") + message);
                 });
                 this.client.addListener(SERVER_PACKET_TYPE.RECEIVED_ITEMS, processItemsPacket);
                 this.disconnectListener = setInterval(() => {
@@ -65,9 +64,9 @@ export class Connection {
                 let dataCache = slotData["shapesanity"].valueOf();
                 if (dataCache instanceof Array) {
                     this.shapesanityNames = dataCache;
-                    apDebugLog(`Loaded slotData shapesanity (length=${dataCache.length})`);
+                    logger.debug(`Loaded slotData shapesanity (length=${dataCache.length})`);
                 } else {
-                    apUserLog(`Error on loading shapesanity from slotData: class=${dataCache.constructor.name}`);
+                    logger.log(`Error on loading shapesanity from slotData: class=${dataCache.constructor.name}`);
                     modImpl.dialogs.showInfo(
                         shapez.T.mods.shapezipelago.infoBox.impossible.title,
                         `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${shapez.T.mods.shapezipelago.infoBox.impossible.shapesanitySlotData}`
@@ -76,27 +75,27 @@ export class Connection {
 
                 // Always string
                 this.goal = slotData["goal"].toString();
-                apDebugLog(`Loaded slotData goal=${this.goal}`);
+                logger.debug(`Loaded slotData goal=${this.goal}`);
 
                 // Always integer, equals location count (without goal)
                 this.levelsToGenerate = Number(slotData["maxlevel"]);
-                apDebugLog(`Loaded slotData maxlevel=${this.levelsToGenerate}`);
+                logger.debug(`Loaded slotData maxlevel=${this.levelsToGenerate}`);
                 if (this.goal === "vanilla" || this.goal === "mam") {
                     ++this.levelsToGenerate;
                 }
 
                 // Always integer
                 this.tiersToGenerate = Number(slotData["finaltier"]);
-                apDebugLog(`Loaded slotData finaltier=${this.tiersToGenerate}`);
+                logger.debug(`Loaded slotData finaltier=${this.tiersToGenerate}`);
 
                 this.slotId = this.client.data.slot;
-                apDebugLog(`Loaded slotId=${this.slotId}`);
+                logger.debug(`Loaded slotId=${this.slotId}`);
 
                 this.randomStepsLength = new Array(5);
                 for (let phaseNumber = 0; phaseNumber < 5; ++phaseNumber) {
                     // Always integer
                     this.randomStepsLength[phaseNumber] = Number(slotData[`Phase ${phaseNumber} length`]);
-                    apDebugLog(`Loaded slotData randomStepsLength[${phaseNumber}]: ${this.randomStepsLength[phaseNumber]}`);
+                    logger.debug(`Loaded slotData randomStepsLength[${phaseNumber}]: ${this.randomStepsLength[phaseNumber]}`);
                 }
 
                 for (let phaseNumber = 1; phaseNumber <= 5; ++phaseNumber) {
@@ -105,75 +104,75 @@ export class Connection {
                     this.positionOfUpgradeBuilding[slotData[`Upgrade building ${phaseNumber}`]] = phaseNumber;
                 }
                 for (const buildingName in this.positionOfLevelBuilding) {
-                    apDebugLog(`Initialized phase number ${this.positionOfLevelBuilding[buildingName]} for level and ${
+                    logger.debug(`Initialized phase number ${this.positionOfLevelBuilding[buildingName]} for level and ${
                         this.positionOfUpgradeBuilding[buildingName]} for upgrade building ${buildingName}`);
                 }
 
                 // Always integer
                 this.throughputLevelsRatio = Number(slotData["throughput_levels_ratio"]);
-                apDebugLog(`Loaded slotData throughput_levels_ratio=${this.throughputLevelsRatio}`);
+                logger.debug(`Loaded slotData throughput_levels_ratio=${this.throughputLevelsRatio}`);
 
                 // Always string
                 this.levelsLogic = slotData["randomize_level_logic"].toString();
-                apDebugLog(`Loaded slotData randomize_level_logic=${this.levelsLogic}`);
+                logger.debug(`Loaded slotData randomize_level_logic=${this.levelsLogic}`);
 
                 // Always string
                 this.upgradesLogic = slotData["randomize_upgrade_logic"].toString();
-                apDebugLog(`Loaded slotData randomize_upgrade_logic=${this.upgradesLogic}`);
+                logger.debug(`Loaded slotData randomize_upgrade_logic=${this.upgradesLogic}`);
 
                 // Always integer
                 this.clientSeed = Number(slotData["seed"]);
-                apDebugLog(`Loaded slotData seed=${this.clientSeed}`);
+                logger.debug(`Loaded slotData seed=${this.clientSeed}`);
 
                 // Always integer
                 this.requiredShapesMultiplier = Number(slotData["required_shapes_multiplier"]);
-                apDebugLog(`Loaded slotData required_shapes_multiplier=${this.requiredShapesMultiplier}`);
+                logger.debug(`Loaded slotData required_shapes_multiplier=${this.requiredShapesMultiplier}`);
 
                 // Always boolean
                 this.isRandomizedLevels = Boolean(slotData["randomize_level_requirements"]);
-                apDebugLog(`Loaded slotData randomize_level_requirements=${this.isRandomizedLevels}`);
+                logger.debug(`Loaded slotData randomize_level_requirements=${this.isRandomizedLevels}`);
 
                 // Always boolean
                 this.isRandomizedUpgrades = Boolean(slotData["randomize_upgrade_requirements"]);
-                apDebugLog(`Loaded slotData randomize_upgrade_requirements=${this.isRandomizedUpgrades}`);
+                logger.debug(`Loaded slotData randomize_upgrade_requirements=${this.isRandomizedUpgrades}`);
 
                 for (const cat of ["belt", "miner", "processors", "painting"]) {
                     // Always number
                     this.categoryRandomBuildingsAmounts[cat] = Number(slotData[`${cat} category buildings amount`]);
-                    apDebugLog(`Loaded slotData "${cat} category buildings amount"=${this.categoryRandomBuildingsAmounts[cat]}`);
+                    logger.debug(`Loaded slotData "${cat} category buildings amount"=${this.categoryRandomBuildingsAmounts[cat]}`);
                 }
 
                 // Always boolean
                 this.isSameLate = Boolean(slotData["same_late_upgrade_requirements"]);
-                apDebugLog(`Loaded slotData same_late_upgrade_requirements=${this.isSameLate}`);
+                logger.debug(`Loaded slotData same_late_upgrade_requirements=${this.isSameLate}`);
 
                 // undefined until 0.5.5, boolean since 0.5.6
                 // Boolean(undefined) => false
                 this.isFloatingLayersAllowed = Boolean(slotData["allow_floating_layers"]);
-                apDebugLog(`Loaded slotData allow_floating_layers=${slotData["allow_floating_layers"]}`);
+                logger.debug(`Loaded slotData allow_floating_layers=${slotData["allow_floating_layers"]}`);
 
                 // undefined until 0.5.10, float since 0.5.11
                 dataCache = slotData["complexity_growth_gradient"];
                 this.complexityGrowthGradient = dataCache === null ? 0.5 : Number(dataCache);
-                apDebugLog(`Loaded slotData complexity_growth_gradient=${slotData["complexity_growth_gradient"]}`);
+                logger.debug(`Loaded slotData complexity_growth_gradient=${slotData["complexity_growth_gradient"]}`);
 
                 // undefined until at least 0.5.13, string since TBA
                 dataCache = slotData["unlock_variant"];
                 this.unlockVariant = dataCache === null ? "individual" : String(dataCache);
-                apDebugLog(`Loaded slotData unlock_variant=${slotData["unlock_variant"]}`);
+                logger.debug(`Loaded slotData unlock_variant=${slotData["unlock_variant"]}`);
 
                 // undefined until 0.5.13, boolean since TBA
                 // Boolean(undefined) => false
                 this.isToolbarShuffled = Boolean(slotData["toolbar_shuffling"]);
-                apDebugLog(`Loaded slotData toolbar_shuffling=${slotData["toolbar_shuffling"]}`);
+                logger.debug(`Loaded slotData toolbar_shuffling=${slotData["toolbar_shuffling"]}`);
             })
             .catch((error) => {
-                apUserLog("Failed to connect: " + error.name + ", " + error.message);
+                logger.log("Failed to connect: " + error.name + ", " + error.message);
             });
     }
 
     disconnect() {
-        apUserLog("Disconnecting from the server");
+        logger.log("Disconnecting from the server");
         if (this.disconnectListener) {
             window.clearInterval(this.disconnectListener);
             this.disconnectListener = null;
