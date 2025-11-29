@@ -11,7 +11,7 @@ import { T } from "shapez/translations";
 import { connection } from "./connection";
 import { currentIngame } from "./ingame";
 import { logger, modImpl } from "./main";
-import { enumTrapTypes } from "./archipelago/ap_traps";
+import { enumTrapToHubGoalRewards, enumTrapTypes } from "./archipelago/ap_traps";
 
 const rng = new RandomNumberGenerator();
 
@@ -398,7 +398,7 @@ function func_trapBuilding(trapType) {
 
         const candidates = [];
         for (const building in currentIngame[trapType]) {
-            if (root.hubGoals.isRewardUnlocked(building)) {
+            if (root.hubGoals.isRewardUnlocked(enumTrapToHubGoalRewards[building])) {
                 candidates.push(building);
             }
         }
