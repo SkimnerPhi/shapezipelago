@@ -2,9 +2,8 @@ import { ITEMS_HANDLING_FLAGS } from "archipelago.js";
 import { processItemsPacket } from "./server_communication";
 import { apDebugLog, apTry } from "./utils";
 import { connection, Connection } from "./connection";
-import { modImpl } from "./main";
 
-export function addInputContainer() {
+export function addInputContainer(modImpl, root) {
     apDebugLog("Calling addInputContainer");
     modImpl.signals.stateEntered.add((state) => {
         if (state.key === "MainMenuState") {
@@ -81,14 +80,16 @@ export function addInputContainer() {
                             items_handling: ITEMS_HANDLING_FLAGS.REMOTE_ALL,
                             password: passwordInput.value,
                         };
-                        new Connection().tryConnect(connectInfo, processItemsPacket).finally(function () {
-                            if (connection) {
-                                statusLabel.innerText = shapez.T.mods.shapezipelago.inputBox.connected;
-                                statusButton.innerText = shapez.T.mods.shapezipelago.inputBox.disconnect;
-                            } else {
-                                statusLabel.innerText = shapez.T.mods.shapezipelago.inputBox.failed;
-                            }
-                        });
+                        new Connection()
+                            .tryConnect(connectInfo, (packet) => processItemsPacket(root, packet))
+                            .finally(function () {
+                                if (connection) {
+                                    statusLabel.innerText = shapez.T.mods.shapezipelago.inputBox.connected;
+                                    statusButton.innerText = shapez.T.mods.shapezipelago.inputBox.disconnect;
+                                } else {
+                                    statusLabel.innerText = shapez.T.mods.shapezipelago.inputBox.failed;
+                                }
+                            });
                     } else {
                         connection.disconnect();
                         statusLabel.innerText = shapez.T.mods.shapezipelago.inputBox.disconnected;

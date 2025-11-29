@@ -179,7 +179,7 @@ export class HUDShapesanity extends BaseHUDPart {
                     shapez.T.mods.shapezipelago.slotDetailsBox.clearCanvasButton
                 );
                 clearCanvasButton.addEventListener("click", () => {
-                    currentIngame.root.logic.clearAllBeltsAndItems();
+                    this.root.logic.clearAllBeltsAndItems();
                 });
             }
         });

@@ -27,7 +27,6 @@ class ModImpl extends Mod {
             patchEnums();
             this.signals.gameInitialized.add(this.onGameInitialized);
             this.signals.gameStarted.add(this.onGameStarted);
-            addInputContainer();
             this.modInterface.registerHudElement("ingame_HUD_Shapesanity", HUDShapesanity);
             this.modInterface.registerGameSystem({
                 id: "BuildingTrap",
@@ -37,6 +36,7 @@ class ModImpl extends Mod {
             registerSavingData();
             addCommands();
             this.signals.gameInitialized.add((/** @type {GameRoot} */ root) => {
+                addInputContainer(this);
                 currentIngame.afterRootInitialization(root);
             });
             this.signals.stateEntered.add((state) => {
@@ -86,12 +86,12 @@ class ModImpl extends Mod {
 
         apTry("Shapesanity button creation failed", () => {
             apDebugLog("Creating shapesanity button");
-            const game_menu = currentIngame.root.hud.parts["gameMenu"];
+            const game_menu = root.hud.parts["gameMenu"];
             const shapesanityButton = document.createElement("button");
             shapesanityButton.classList.add("shapesanityButton");
             game_menu.element.prepend(shapesanityButton);
             game_menu.trackClicks(shapesanityButton, () =>
-                currentIngame.root.hud.parts["ingame_HUD_Shapesanity"].show()
+                root.hud.parts["ingame_HUD_Shapesanity"].show()
             );
         });
         connection.reportStatusToServer(CLIENT_STATUS.PLAYING);
@@ -105,6 +105,6 @@ class ModImpl extends Mod {
         }
 
         apTry("Requesting item package failed", () => connection.requestItemPackage());
-        apTry("Resyncing locations failed", resyncLocationChecks);
+        apTry("Resyncing locations failed", () => resyncLocationChecks(root));
     }
 }

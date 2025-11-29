@@ -475,23 +475,23 @@ export function bulkCheckLocation(resyncMessage, goal, names) {
 }
 
 // This isn't an ideal location for this function, but it's the best option for now
-export function resyncLocationChecks() {
+export function resyncLocationChecks(root) {
     apDebugLog("Resyncing already reached locations");
     const toResync = [];
     // resync levels
-    for (let i = 1; i < currentIngame.root.hubGoals.level; ++i) {
+    for (let i = 1; i < root.hubGoals.level; ++i) {
         // current level is what is to be completed
         toResync.push(`Level ${i}`);
     }
-    if (currentIngame.root.hubGoals.level > 20) {
+    if (root.hubGoals.level > 20) {
         toResync.push("Level 20 Additional", "Level 20 Additional 2");
     }
-    if (currentIngame.root.hubGoals.level > 1) {
+    if (root.hubGoals.level > 1) {
         toResync.push("Level 1 Additional");
     }
     // resync upgrades
     for (const upgradeId of ["belt", "miner", "processors", "painting"]) {
-        const currentLevel = currentIngame.root.hubGoals.getUpgradeLevel(upgradeId);
+        const currentLevel = root.hubGoals.getUpgradeLevel(upgradeId);
         for (let i = 1; i <= currentLevel; ++i) {
             toResync.push(getAPUpgradeLocationString(upgradeId, i));
         }
@@ -499,23 +499,23 @@ export function resyncLocationChecks() {
     // Send resync packet
     bulkCheckLocation("Resynced", false, toResync);
     // resync shapesanity
-    for (const [hash, amount] of Object.entries(currentIngame.root.hubGoals.storedShapes)) {
+    for (const [hash, amount] of Object.entries(root.hubGoals.storedShapes)) {
         if ((amount || 0) > 0) {
             shapesanityAnalyzer(ShapeDefinition.fromShortKey(hash));
         }
     }
     // resync goals
     if (connection.goal === "vanilla" || connection.goal === "mam") {
-        if (connection.levelsToGenerate < currentIngame.root.hubGoals.level) {
+        if (connection.levelsToGenerate < root.hubGoals.level) {
             checkLocation("Checked", true);
         }
     } else if (connection.goal === "even_fasterer") {
         // upgrade levels start at 0, because it is used for index of upgrade definitions
         if (
-            currentIngame.root.hubGoals.getUpgradeLevel("belt") + 1 >= connection.tiersToGenerate &&
-            currentIngame.root.hubGoals.getUpgradeLevel("miner") + 1 >= connection.tiersToGenerate &&
-            currentIngame.root.hubGoals.getUpgradeLevel("processors") + 1 >= connection.tiersToGenerate &&
-            currentIngame.root.hubGoals.getUpgradeLevel("painting") + 1 >= connection.tiersToGenerate
+            root.hubGoals.getUpgradeLevel("belt") + 1 >= connection.tiersToGenerate &&
+            root.hubGoals.getUpgradeLevel("miner") + 1 >= connection.tiersToGenerate &&
+            root.hubGoals.getUpgradeLevel("processors") + 1 >= connection.tiersToGenerate &&
+            root.hubGoals.getUpgradeLevel("painting") + 1 >= connection.tiersToGenerate
         ) {
             checkLocation("Checked", true);
         }
@@ -523,9 +523,10 @@ export function resyncLocationChecks() {
 }
 
 /**
+ * @param {GameRoot} root
  * @param {import("archipelago.js").ReceivedItemsPacket} packet
  */
-export function processItemsPacket(packet) {
+export function processItemsPacket(root, packet) {
     apDebugLog(
         "Received packet with " +
             packet.items.length +
@@ -544,25 +545,25 @@ export function processItemsPacket(packet) {
     if (!currentIngame.isItemsResynced) {
         currentIngame.isItemsResynced = true;
         // Resetting gained rewards to 0 (mostly used like a boolean)
-        for (const reward in currentIngame.root.hubGoals.gainedRewards) {
-            currentIngame.root.hubGoals.gainedRewards[reward] = 0;
+        for (const reward in root.hubGoals.gainedRewards) {
+            root.hubGoals.gainedRewards[reward] = 0;
         }
         // Resetting upgrade improvements to 1 (it's a multiplier)
-        for (const id in currentIngame.root.hubGoals.upgradeImprovements) {
-            currentIngame.root.hubGoals.upgradeImprovements[id] = 1;
+        for (const id in root.hubGoals.upgradeImprovements) {
+            root.hubGoals.upgradeImprovements[id] = 1;
         }
         // Re-receive items without popup
         const cachedprocessedItemCount = currentIngame.processedItemCount;
         for (let i = 0; i < cachedprocessedItemCount; ++i) {
-            receiveItem(all_items[i], false, true, i);
+            receiveItem(root, all_items[i], false, true, i);
         }
         // Backwards compatibility to 0.5.3
         const datacache = connection.client.data.slotData["lock_belt_and_extractor"];
         if (datacache !== null) {
             apDebugLog(`Loaded lock_belt_and_extractor as backwards compatibility: ${datacache}`);
             if (!datacache) {
-                currentIngame.root.hubGoals.gainedRewards[enumHubGoalRewards.reward_belt] = 1;
-                currentIngame.root.hubGoals.gainedRewards[enumHubGoalRewards.reward_miner] = 1;
+                root.hubGoals.gainedRewards[enumHubGoalRewards.reward_belt] = 1;
+                root.hubGoals.gainedRewards[enumHubGoalRewards.reward_miner] = 1;
             }
         } else {
             apDebugLog("No lock_belt_and_extractor found in slotData");
@@ -572,6 +573,7 @@ export function processItemsPacket(packet) {
         apDebugLog("Items up-to-date");
     } else if (currentIngame.processedItemCount === all_items.length - 1) {
         receiveItem(
+            root,
             all_items[currentIngame.processedItemCount],
             true,
             false,
@@ -580,6 +582,7 @@ export function processItemsPacket(packet) {
         ++currentIngame.processedItemCount;
     } else if (currentIngame.processedItemCount === all_items.length - 2) {
         receiveItem(
+            root,
             all_items[currentIngame.processedItemCount],
             true,
             false,
@@ -587,6 +590,7 @@ export function processItemsPacket(packet) {
         );
         ++currentIngame.processedItemCount;
         receiveItem(
+            root,
             all_items[currentIngame.processedItemCount],
             true,
             false,
@@ -595,6 +599,7 @@ export function processItemsPacket(packet) {
         ++currentIngame.processedItemCount;
     } else if (currentIngame.processedItemCount === all_items.length - 3) {
         receiveItem(
+            root,
             all_items[currentIngame.processedItemCount],
             true,
             false,
@@ -602,6 +607,7 @@ export function processItemsPacket(packet) {
         );
         ++currentIngame.processedItemCount;
         receiveItem(
+            root,
             all_items[currentIngame.processedItemCount],
             true,
             false,
@@ -609,6 +615,7 @@ export function processItemsPacket(packet) {
         );
         ++currentIngame.processedItemCount;
         receiveItem(
+            root,
             all_items[currentIngame.processedItemCount],
             true,
             false,
@@ -618,7 +625,7 @@ export function processItemsPacket(packet) {
     } else {
         const itemCounting = [];
         for (let i = currentIngame.processedItemCount; i < all_items.length; ++i) {
-            itemCounting.push(receiveItem(all_items[i], false, false, i));
+            itemCounting.push(receiveItem(root, all_items[i], false, false, i));
             ++currentIngame.processedItemCount;
         }
         modImpl.dialogs.showInfo(
@@ -630,16 +637,17 @@ export function processItemsPacket(packet) {
 }
 
 /**
+ * @param {GameRoot} root
  * @param {import("archipelago.js").NetworkItem} item
  * @param {boolean} showInfo
  * @param {boolean} resynced
  * @param {number} index
  */
-function receiveItem(item, showInfo, resynced, index) {
+function receiveItem(root, item, showInfo, resynced, index) {
     const itemName = connection.getItemName(item.item);
     let message = ": [ERROR]";
     apTry("Item receiving failed", () => {
-        message = receiveItemFunctions[itemName](currentIngame.root, resynced, index);
+        message = receiveItemFunctions[itemName](root, resynced, index);
     });
     apDebugLog("Processed item " + itemName + message);
     if (showInfo) {

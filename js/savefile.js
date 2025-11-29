@@ -38,7 +38,9 @@ export function registerSavingData() {
                 currentIngame.connectionInformation = savegame.modExtraData["connectInfo"];
                 apDebugLog("Deserialized with processed item count " + currentIngame.processedItemCount);
                 new Connection()
-                    .tryConnect(savegame.modExtraData["connectInfo"], processItemsPacket)
+                    .tryConnect(savegame.modExtraData["connectInfo"], (packet) =>
+                        processItemsPacket(root, packet)
+                    )
                     .finally(function () {
                         // Resuming InGame stages
                         apDebugLog("Redeserializing data");

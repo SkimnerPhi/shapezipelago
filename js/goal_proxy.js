@@ -1,7 +1,6 @@
 import { globalConfig } from "shapez/core/config";
 import { connection } from "./connection";
 import { enumAnalyticsDataSource } from "shapez/game/production_analytics";
-import { currentIngame } from "./ingame";
 import { checkLocation } from "./server_communication";
 
 const efficiency3TargetRate = 256;
@@ -17,7 +16,7 @@ export class GoalProxy {
 
         const currentRateRaw = this.root.productionAnalytics.getCurrentShapeRateRaw(
             enumAnalyticsDataSource.delivered,
-            currentIngame.root.shapeDefinitionMgr.getShapeFromShortKey(connection.blueprintShape)
+            this.root.shapeDefinitionMgr.getShapeFromShortKey(connection.blueprintShape)
         );
         if (currentRateRaw / globalConfig.analyticsSliceDurationSeconds >= efficiency3TargetRate) {
             checkLocation("Checked", true);
