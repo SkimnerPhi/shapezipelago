@@ -626,7 +626,7 @@ export function processItemsPacket(root, packet) {
             ++currentIngame.processedItemCount;
         }
         modImpl.dialogs.showInfo(
-            shapez.T.mods.shapezipelago.itemReceivingBox.title.multiple,
+            T.mods.shapezipelago.itemReceivingBox.title.multiple,
             itemCounting.join("<br />")
         );
     }
@@ -648,17 +648,17 @@ function receiveItem(root, item, showInfo, resynced, index) {
         const sendingPlayerName = connection.getPlayername(item.player);
         const foundLocationName = connection.getLocationName(item.player, item.location);
         modImpl.dialogs.showInfo(
-            shapez.T.mods.shapezipelago.itemReceivingBox.title.single,
-            shapez.T.mods.shapezipelago.itemReceivingBox.item[itemName] +
+            T.mods.shapezipelago.itemReceivingBox.title.single,
+            T.mods.shapezipelago.itemReceivingBox.item[itemName] +
                 message +
                 "<br />" +
-                shapez.T.mods.shapezipelago.itemReceivingBox.foundBy
+                T.mods.shapezipelago.itemReceivingBox.foundBy
                     .replace("<player>", sendingPlayerName)
                     .replace("<location>", foundLocationName)
         );
         return "";
     } else {
-        return shapez.T.mods.shapezipelago.itemReceivingBox.item[itemName] + message;
+        return T.mods.shapezipelago.itemReceivingBox.item[itemName] + message;
     }
 }
 

@@ -271,97 +271,97 @@ export function translateShapesanity(name) {
         // simple full, 1-4
         if (capitalColorNames[words[0]]) {
             if (capitalShapeNames[words[1]]) {
-                const ret = shapez.T.mods.shapezipelago.shapesanityBox.byNoun[words[0]][words[1]].replace(
+                const ret = T.mods.shapezipelago.shapesanityBox.byNoun[words[0]][words[1]].replace(
                     "<shape>",
-                    shapez.T.mods.shapezipelago.shapesanityBox.shape[words[1]]
+                    T.mods.shapezipelago.shapesanityBox.shape[words[1]]
                 );
                 currentIngame.translated[name] = ret.charAt(0).toUpperCase() + ret.slice(1);
             } else {
-                currentIngame.translated[name] = shapez.T.mods.shapezipelago.shapesanityBox["1Color4Shapes"][
+                currentIngame.translated[name] = T.mods.shapezipelago.shapesanityBox["1Color4Shapes"][
                     words[0]
                 ].replace("<code>", words[1]);
             }
         } else {
-            currentIngame.translated[name] = shapez.T.mods.shapezipelago.shapesanityBox["4Colors1Shape"][
+            currentIngame.translated[name] = T.mods.shapezipelago.shapesanityBox["4Colors1Shape"][
                 words[1]
             ].replace("<code>", words[0]);
         }
     } else if (words.length === 3) {
         // half, piece, cornered simple, 3-1, half-half, checkered
         if (words[0] === "Half") {
-            currentIngame.translated[name] = shapez.T.mods.shapezipelago.shapesanityBox.byNoun.Half[
+            currentIngame.translated[name] = T.mods.shapezipelago.shapesanityBox.byNoun.Half[
                 words[2]
             ].replace(
                 "<comb>",
-                shapez.T.mods.shapezipelago.shapesanityBox.byNoun[words[1]][words[2]].replace(
+                T.mods.shapezipelago.shapesanityBox.byNoun[words[1]][words[2]].replace(
                     "<shape>",
-                    shapez.T.mods.shapezipelago.shapesanityBox.shape[words[2]]
+                    T.mods.shapezipelago.shapesanityBox.shape[words[2]]
                 )
             );
         } else if (words[2] === "Piece") {
-            const ret = shapez.T.mods.shapezipelago.shapesanityBox.Piece[words[1]].replace(
+            const ret = T.mods.shapezipelago.shapesanityBox.Piece[words[1]].replace(
                 "<comb>",
-                shapez.T.mods.shapezipelago.shapesanityBox.byNoun[words[0]].Piece.replace(
+                T.mods.shapezipelago.shapesanityBox.byNoun[words[0]].Piece.replace(
                     "<shape>",
-                    shapez.T.mods.shapezipelago.shapesanityBox.shape[words[1]]
+                    T.mods.shapezipelago.shapesanityBox.shape[words[1]]
                 )
             );
             currentIngame.translated[name] = ret.charAt(0).toUpperCase() + ret.slice(1);
         } else if (words[0] === "Cornered") {
-            currentIngame.translated[name] = shapez.T.mods.shapezipelago.shapesanityBox.byNoun.Cornered[
+            currentIngame.translated[name] = T.mods.shapezipelago.shapesanityBox.byNoun.Cornered[
                 words[2]
             ].replace(
                 "<comb>",
-                shapez.T.mods.shapezipelago.shapesanityBox.byNoun[words[1]][words[2]].replace(
+                T.mods.shapezipelago.shapesanityBox.byNoun[words[1]][words[2]].replace(
                     "<shape>",
-                    shapez.T.mods.shapezipelago.shapesanityBox.shape[words[2]]
+                    T.mods.shapezipelago.shapesanityBox.shape[words[2]]
                 )
             );
         } else if (words[0] === "3-1") {
-            currentIngame.translated[name] = shapez.T.mods.shapezipelago.shapesanityBox.shortKeys[
+            currentIngame.translated[name] = T.mods.shapezipelago.shapesanityBox.shortKeys[
                 "3-1"
             ].replace("<codes>", `${words[1]} ${words[2]}`);
         } else if (words[0] === "Half-Half") {
-            currentIngame.translated[name] = shapez.T.mods.shapezipelago.shapesanityBox.shortKeys[
+            currentIngame.translated[name] = T.mods.shapezipelago.shapesanityBox.shortKeys[
                 "Half-Half"
             ].replace("<codes>", `${words[1]} ${words[2]}`);
         } else {
             // if (words[0] === "Checkered")
-            currentIngame.translated[name] = shapez.T.mods.shapezipelago.shapesanityBox.shortKeys[
+            currentIngame.translated[name] = T.mods.shapezipelago.shapesanityBox.shortKeys[
                 "Checkered"
             ].replace("<codes>", `${words[1]} ${words[2]}`);
         }
     } else if (words.length === 4) {
         // Cut Out, 2-sided singles and 2-1, 3-part singles
         if (words[0] === "Cut") {
-            currentIngame.translated[name] = shapez.T.mods.shapezipelago.shapesanityBox.byNoun.CutOut[
+            currentIngame.translated[name] = T.mods.shapezipelago.shapesanityBox.byNoun.CutOut[
                 words[3]
             ].replace(
                 "<comb>",
-                shapez.T.mods.shapezipelago.shapesanityBox.byNoun[words[2]][words[3]].replace(
+                T.mods.shapezipelago.shapesanityBox.byNoun[words[2]][words[3]].replace(
                     "<shape>",
-                    shapez.T.mods.shapezipelago.shapesanityBox.shape[words[3]]
+                    T.mods.shapezipelago.shapesanityBox.shape[words[3]]
                 )
             );
         } else if (words[0] === "Singles") {
-            currentIngame.translated[name] = shapez.T.mods.shapezipelago.shapesanityBox.shortKeys[
+            currentIngame.translated[name] = T.mods.shapezipelago.shapesanityBox.shortKeys[
                 "Singles"
             ].replace("<codes>", `${words[1]} ${words[2]} ${words[3]}`);
         } else {
             // 2-sided singles and 2-1
-            currentIngame.translated[name] = shapez.T.mods.shapezipelago.shapesanityBox.shortKeys[
+            currentIngame.translated[name] = T.mods.shapezipelago.shapesanityBox.shortKeys[
                 words[0] + words[1]
             ].replace("<codes>", `${words[2]} ${words[3]}`);
         }
     } else {
         // (words.length == 5): 3-part 2-1-1, 4-part
         if (words[0] === "Singles") {
-            currentIngame.translated[name] = shapez.T.mods.shapezipelago.shapesanityBox.shortKeys[
+            currentIngame.translated[name] = T.mods.shapezipelago.shapesanityBox.shortKeys[
                 "Singles"
             ].replace("<codes>", `${words[1]} ${words[2]} ${words[3]} ${words[4]}`);
         } else {
             // 3-part 2-1-1
-            currentIngame.translated[name] = shapez.T.mods.shapezipelago.shapesanityBox.shortKeys[
+            currentIngame.translated[name] = T.mods.shapezipelago.shapesanityBox.shortKeys[
                 words[0] + words[1]
             ].replace("<codes>", `${words[2]} ${words[3]} ${words[4]}`);
         }

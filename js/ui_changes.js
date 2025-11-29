@@ -2,6 +2,7 @@ import { ITEMS_HANDLING_FLAGS } from "archipelago.js";
 import { processItemsPacket } from "./server_communication";
 import { connection, Connection } from "./connection";
 import { logger } from "./main";
+import { T } from "shapez/translations";
 
 export function addInputContainer(modImpl, root) {
     logger.debug("Calling addInputContainer");
@@ -31,7 +32,7 @@ export function addInputContainer(modImpl, root) {
             inputContainer.appendChild(statusContainer);
             const playerLabel = document.createElement("h4");
             const playerInput = document.createElement("input");
-            playerLabel.innerText = shapez.T.mods.shapezipelago.inputBox.player;
+            playerLabel.innerText = T.mods.shapezipelago.inputBox.player;
             playerInput.type = "text";
             playerInput.className = "playerInput";
             playerInput.value = modImpl.settings.player;
@@ -39,7 +40,7 @@ export function addInputContainer(modImpl, root) {
             playerContainer.appendChild(playerInput);
             const addressLabel = document.createElement("h4");
             const addressInput = document.createElement("input");
-            addressLabel.innerText = shapez.T.mods.shapezipelago.inputBox.address;
+            addressLabel.innerText = T.mods.shapezipelago.inputBox.address;
             addressInput.type = "text";
             addressInput.className = "addressInput";
             addressInput.value = modImpl.settings.address;
@@ -47,22 +48,22 @@ export function addInputContainer(modImpl, root) {
             addressContainer.appendChild(addressInput);
             const portLabel = document.createElement("h4");
             const portInput = document.createElement("input");
-            portLabel.innerText = shapez.T.mods.shapezipelago.inputBox.port;
+            portLabel.innerText = T.mods.shapezipelago.inputBox.port;
             portInput.type = "number";
             portInput.value = modImpl.settings.port;
             portContainer.appendChild(portLabel);
             portContainer.appendChild(portInput);
             const passwordLabel = document.createElement("h4");
             const passwordInput = document.createElement("input");
-            passwordLabel.innerText = shapez.T.mods.shapezipelago.inputBox.password;
+            passwordLabel.innerText = T.mods.shapezipelago.inputBox.password;
             passwordInput.type = "password";
             passwordInput.value = modImpl.settings.password;
             passwordContainer.appendChild(passwordLabel);
             passwordContainer.appendChild(passwordInput);
             const statusLabel = document.createElement("h4");
             const statusButton = document.createElement("button");
-            statusLabel.innerText = shapez.T.mods.shapezipelago.inputBox.notConnected;
-            statusButton.innerText = shapez.T.mods.shapezipelago.inputBox.connect;
+            statusLabel.innerText = T.mods.shapezipelago.inputBox.notConnected;
+            statusButton.innerText = T.mods.shapezipelago.inputBox.connect;
             statusButton.classList.add("styledButton", "statusButton");
             statusButton.addEventListener("click", () => {
                 if (!connection) {
@@ -83,16 +84,16 @@ export function addInputContainer(modImpl, root) {
                         .tryConnect(connectInfo, (packet) => processItemsPacket(root, packet))
                         .finally(function () {
                             if (connection) {
-                                statusLabel.innerText = shapez.T.mods.shapezipelago.inputBox.connected;
-                                statusButton.innerText = shapez.T.mods.shapezipelago.inputBox.disconnect;
+                                statusLabel.innerText = T.mods.shapezipelago.inputBox.connected;
+                                statusButton.innerText = T.mods.shapezipelago.inputBox.disconnect;
                             } else {
-                                statusLabel.innerText = shapez.T.mods.shapezipelago.inputBox.failed;
+                                statusLabel.innerText = T.mods.shapezipelago.inputBox.failed;
                             }
                         });
                 } else {
                     connection.disconnect();
-                    statusLabel.innerText = shapez.T.mods.shapezipelago.inputBox.disconnected;
-                    statusButton.innerText = shapez.T.mods.shapezipelago.inputBox.connect;
+                    statusLabel.innerText = T.mods.shapezipelago.inputBox.disconnected;
+                    statusButton.innerText = T.mods.shapezipelago.inputBox.connect;
                 }
             });
             statusContainer.appendChild(statusLabel);

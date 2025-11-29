@@ -5,6 +5,7 @@ import {
     CONNECTION_STATUS,
     SERVER_PACKET_TYPE,
 } from "archipelago.js";
+import { T } from "shapez/translations";
 
 import { modImpl, logger } from "./main";
 
@@ -46,8 +47,8 @@ export class Connection {
                 this.disconnectListener = setInterval(() => {
                     if (this.client.status === CONNECTION_STATUS.DISCONNECTED) {
                         modImpl.dialogs.showInfo(
-                            shapez.T.mods.shapezipelago.connectionLostBox.title,
-                            shapez.T.mods.shapezipelago.connectionLostBox.message
+                            T.mods.shapezipelago.connectionLostBox.title,
+                            T.mods.shapezipelago.connectionLostBox.message
                         );
                         window.clearInterval(this.disconnectListener);
                         this.disconnectListener = null;
@@ -68,8 +69,8 @@ export class Connection {
                 } else {
                     logger.log(`Error on loading shapesanity from slotData: class=${dataCache.constructor.name}`);
                     modImpl.dialogs.showInfo(
-                        shapez.T.mods.shapezipelago.infoBox.impossible.title,
-                        `${shapez.T.mods.shapezipelago.infoBox.impossible.report}<br />${shapez.T.mods.shapezipelago.infoBox.impossible.shapesanitySlotData}`
+                        T.mods.shapezipelago.infoBox.impossible.title,
+                        `${T.mods.shapezipelago.infoBox.impossible.report}<br />${T.mods.shapezipelago.infoBox.impossible.shapesanitySlotData}`
                     );
                 }
 

@@ -17,7 +17,7 @@ export class HUDShapesanity extends BaseHUDPart {
         this.background = makeDiv(parent, "ingame_HUD_Shapesanity", ["ingameDialog"]);
 
         this.dialogInner = makeDiv(this.background, null, ["dialogInner"]);
-        this.title = makeDiv(this.dialogInner, null, ["title"], shapez.T.mods.shapezipelago.APBox.title);
+        this.title = makeDiv(this.dialogInner, null, ["title"], T.mods.shapezipelago.APBox.title);
         this.closeButton = makeDiv(this.title, null, ["closeButton"]);
         this.trackClicks(this.closeButton, this.close);
 
@@ -25,31 +25,31 @@ export class HUDShapesanity extends BaseHUDPart {
         this.tabButtonShapesanity = makeButton(
             this.tabs,
             ["tabsButtonShapesanity"],
-            shapez.T.mods.shapezipelago.shapesanityBox.title
+            T.mods.shapezipelago.shapesanityBox.title
         );
         this.trackClicks(this.tabButtonShapesanity, this.setTabShapesanity);
         this.tabButtonSlotDetails = makeButton(
             this.tabs,
             ["tabButtonSlotDetails"],
-            shapez.T.mods.shapezipelago.slotDetailsBox.title
+            T.mods.shapezipelago.slotDetailsBox.title
         );
         this.trackClicks(this.tabButtonSlotDetails, this.setTabSlotDetails);
         this.tabButtonAchievements = makeButton(
             this.tabs,
             ["tabButtonAchievements"],
-            shapez.T.mods.shapezipelago.achievementsBox.title
+            T.mods.shapezipelago.achievementsBox.title
         );
         this.trackClicks(this.tabButtonAchievements, this.setTabAchievements);
         this.tabButtonTimeTrials = makeButton(
             this.tabs,
             ["tabButtonTimeTrials"],
-            shapez.T.mods.shapezipelago.timeTrialsBox.title
+            T.mods.shapezipelago.timeTrialsBox.title
         );
         this.trackClicks(this.tabButtonTimeTrials, this.setTabTimeTrials);
         this.tabButtonGiftShop = makeButton(
             this.tabs,
             ["tabButtonGiftShop"],
-            shapez.T.mods.shapezipelago.giftShopBox.title
+            T.mods.shapezipelago.giftShopBox.title
         );
         this.trackClicks(this.tabButtonGiftShop, this.setTabGiftShop);
 
@@ -132,46 +132,46 @@ export class HUDShapesanity extends BaseHUDPart {
         if (this.visible) {
             const detailsElem = document.createElement("span");
             detailsElem.innerHTML =
-                shapez.T.mods.shapezipelago.slotDetailsBox.goal +
+                T.mods.shapezipelago.slotDetailsBox.goal +
                 ": " +
                 connection.goal +
                 "<br />" +
-                shapez.T.mods.shapezipelago.slotDetailsBox.levelAmount +
+                T.mods.shapezipelago.slotDetailsBox.levelAmount +
                 ": " +
                 connection.levelsToGenerate.toString() +
                 "<br />" +
-                shapez.T.mods.shapezipelago.slotDetailsBox.upgradeAmount +
+                T.mods.shapezipelago.slotDetailsBox.upgradeAmount +
                 ": " +
                 connection.tiersToGenerate.toString() +
                 "<br />" +
-                shapez.T.mods.shapezipelago.slotDetailsBox.levelLogic +
+                T.mods.shapezipelago.slotDetailsBox.levelLogic +
                 ": " +
                 (connection.isRandomizedLevels
                     ? connection.levelsLogic
-                    : shapez.T.mods.shapezipelago.slotDetailsBox.notRandomized) +
+                    : T.mods.shapezipelago.slotDetailsBox.notRandomized) +
                 "<br />" +
-                shapez.T.mods.shapezipelago.slotDetailsBox.upgradeLogic +
+                T.mods.shapezipelago.slotDetailsBox.upgradeLogic +
                 ": " +
                 (connection.isRandomizedUpgrades
                     ? connection.upgradesLogic
-                    : shapez.T.mods.shapezipelago.slotDetailsBox.notRandomized) +
+                    : T.mods.shapezipelago.slotDetailsBox.notRandomized) +
                 "<br />" +
-                shapez.T.mods.shapezipelago.slotDetailsBox.seed +
+                T.mods.shapezipelago.slotDetailsBox.seed +
                 ": " +
                 connection.clientSeed.toString() +
                 "<br />" +
-                shapez.T.mods.shapezipelago.slotDetailsBox.floatingLayers +
+                T.mods.shapezipelago.slotDetailsBox.floatingLayers +
                 ": " +
                 connection.isFloatingLayersAllowed +
                 "<br />" +
-                shapez.T.mods.shapezipelago.slotDetailsBox.shop +
+                T.mods.shapezipelago.slotDetailsBox.shop +
                 ": " +
-                shapez.T.mods.shapezipelago.slotDetailsBox.shopNone;
+                T.mods.shapezipelago.slotDetailsBox.shopNone;
             this.contentDiv.appendChild(detailsElem);
             const clearCanvasButton = makeButton(
                 this.contentDiv,
                 [],
-                shapez.T.mods.shapezipelago.slotDetailsBox.clearCanvasButton
+                T.mods.shapezipelago.slotDetailsBox.clearCanvasButton
             );
             clearCanvasButton.addEventListener("click", () => {
                 this.root.logic.clearAllBeltsAndItems();
@@ -209,7 +209,7 @@ export class HUDShapesanity extends BaseHUDPart {
                 }
             } else {
                 const placeholder = document.createElement("span", {});
-                placeholder.innerText = shapez.T.mods.shapezipelago.achievementsBox.disabled;
+                placeholder.innerText = T.mods.shapezipelago.achievementsBox.disabled;
                 this.contentDiv.appendChild(placeholder);
             }
         }
